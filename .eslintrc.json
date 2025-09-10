@@ -1,7 +1,17 @@
 {
-  "extends": ["next/core-web-vitals", "eslint:recommended"],
+  "root": true,
+  "extends": ["next/core-web-vitals"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2022": true
+  },
   "rules": {
-    "no-console": ["warn", { "allow": ["warn", "error"] }],
-    "@next/next/no-img-element": "off"
+    "react/react-in-jsx-scope": "off",
+    "no-undef": "off",
+    "no-unused-vars": [
+      "warn",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ]
   }
 }
