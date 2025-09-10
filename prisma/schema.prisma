@@ -1,0 +1,163 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
+  relationMode = "foreignKeys"
+}
+
+model Animal {
+  id           Int      @id @default(autoincrement())
+  slug         String   @unique
+  nome         String
+
+  especie      String
+  sexo         String
+  porte        String
+
+  idadeMeses   Int
+  vacinado     Boolean  @default(false)
+  castrado     Boolean  @default(false)
+  raca         String?
+  temperamento String?
+  descricao    String
+  adotado   Boolean  @default(false)
+  adotadoEm DateTime?
+
+  historiaResgate String?
+  convivencia     String?
+  saudeDetalhes   String?
+  dataResgate     DateTime?
+
+  @@index      ([adotado, adotadoEm])
+  photos       Photo[]
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  requests     AdoptionRequest[]
+}
+
+model Photo {
+  id         Int     @id @default(autoincrement())
+  animal     Animal  @relation(fields: [animalId], references: [id], onDelete: Cascade)
+  animalId   Int
+  url        String
+  alt        String
+  isCover    Boolean @default(false)
+  sortOrder  Int     @default(0)
+  createdAt  DateTime @default(now())
+
+  @@index([animalId, sortOrder])
+}
+
+model AdoptionRequest {
+  id        Int      @id @default(autoincrement())
+  animal    Animal   @relation(fields: [animalId], references: [id], onDelete: Cascade)
+  animalId  Int
+
+  nome      String
+  email     String
+  telefone  String
+
+  cidade    String
+  uf        String
+
+  // NOVOS
+  cep       String?
+  endereco  String?
+  numero    String?
+  bairro    String?
+
+  mensagem  String
+  status    String   @default("NOVO")
+  criadoEm  DateTime @default(now())
+  perfil    Json?
+
+  @@index([status, criadoEm])
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String   // hash (bcrypt)
+  role      Role     @default(EDITOR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Partner {
+  id        String   @id @default(cuid())
+  name      String
+  url       String?
+  logoUrl   String
+  active    Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, order])
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  startsAt  DateTime
+  endsAt    DateTime?
+  location  String?
+  city      String?
+  coverUrl  String?
+  excerpt   String?
+  content   String?
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, startsAt])
+}
+
+enum PixKeyType {
+  CPF
+  CNPJ
+  EMAIL
+  TELEFONE
+  ALEATORIA
+}
+
+model DonationSettings {
+  id            String     @id @default("singleton")
+  pixKey        String?
+  pixKeyType    PixKeyType?
+  bankName      String?
+  bankAgency    String?
+  bankAccount   String?
+  bankHolder    String?
+  recurringLink String?
+  itemsWanted   String?
+  updatedAt     DateTime   @updatedAt
+
+  collectionPoints CollectionPoint[]
+}
+
+model CollectionPoint {
+  id        String   @id @default(cuid())
+  settings  DonationSettings @relation(fields: [settingsId], references: [id], onDelete: Cascade)
+  settingsId String
+  name      String
+  address   String
+  hours     String?
+  phone     String?
+  active    Boolean  @default(true)
+  order     Int      @default(0)
+
+  @@index([settingsId, active, order])
+}

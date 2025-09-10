@@ -1,0 +1,59 @@
+# ---- Dependências / gestores de pacote ----
+node_modules/
+.pnp/
+.pnp.*          # Yarn PnP
+.yarn/*         # Yarn Berry cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ---- Build / artefatos do Next.js ----
+.next/
+out/
+build/
+
+# Turbo / caches
+.turbo/
+.next/cache/
+
+# ---- Testes / cobertura ----
+coverage/
+
+# ---- Logs / debug ----
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# ---- Misc ----
+.DS_Store
+*.pem
+
+# ---- Vercel ----
+.vercel/
+
+# ---- Env (mantenha um exemplo versionado) ----
+.env*
+!.env.example
+
+# ---- TypeScript ----
+*.tsbuildinfo
+next-env.d.ts
+
+# ---- Prisma ----
+# (O client é gerado dentro de node_modules/@prisma/client; mantenha suas migrations.)
+# Ignore diretório de gerados customizados (se existir no seu projeto)
+src/generated/prisma/
+
+# Se ainda tiver SQLite local, ignore arquivos de banco locais:
+*.db
+*.sqlite
+*.sqlite-journal
+
+# ---- IDE ----
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json

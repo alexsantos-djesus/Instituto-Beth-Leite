@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .cursor-pet {
+    cursor: var(--cursor-default);
+  }
+
+  .cursor-pet-pointer {
+    cursor: var(--cursor-pointer);
+  }
+}
+
+:root {
+  --header-h: 72px;
+  --cursor-default: auto;
+  --cursor-pointer: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid theme(colors.brand.primary);
+  outline-offset: 2px;
+}
+
+@media (any-pointer: fine) {
+  :root {
+    --cursor-default: url("/cursors/paw-default.png") 6 2, auto;
+    --cursor-pointer: url("/cursors/paw-pointer.png") 6 2, pointer;
+  }
+
+  html,
+  body {
+    cursor: var(--cursor-default) !important;
+  }
+
+  a,
+  button,
+  summary,
+  label[for],
+  select,
+  details>summary,
+  [role="button"],
+  .clickable,
+  input[type="button"],
+  input[type="submit"],
+  input[type="checkbox"],
+  input[type="radio"] {
+    cursor: var(--cursor-pointer) !important;
+  }
+  .cursor-pointer,
+  .hover\:cursor-pointer:hover {
+    cursor: var(--cursor-pointer) !important;
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="search"],
+  input[type="password"],
+  textarea,
+  [contenteditable="true"] {
+    cursor: text !important;
+  }
+  :disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed !important;
+  }
+}
+
+.cursor-pet {
+  cursor: var(--cursor-default);
+}
+
+.cursor-pet-pointer {
+  cursor: var(--cursor-pointer);
+}

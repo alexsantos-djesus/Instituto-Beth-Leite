@@ -1,0 +1,55 @@
+import Link from "next/link";
+import Image from "next/image";
+import { PawPrint, Sparkles } from "lucide-react";
+import SectionShell from "./SectionShell";
+
+export default function AnimalsZone({ destaques }: { destaques: any[] }) {
+  return (
+    <SectionShell id="animais" tone="teal">
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 rounded-full bg-teal-100 px-3 py-1 text-teal-900 text-xs font-medium ring-1 ring-teal-200">
+            <PawPrint size={14} /> adoção responsável
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold">Animais para Adoção</h2>
+          <p className="text-neutral-700">Filtros por porte, idade e temperamento.</p>
+        </div>
+        <Link
+          href="/animais"
+          className="hidden sm:inline-flex items-center gap-2 rounded-full px-4 py-2 bg-teal-600 text-white hover:bg-teal-700"
+        >
+          Ver todos <Sparkles size={16} />
+        </Link>
+      </div>
+
+      <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-4">
+        {destaques.map((a) => {
+          const cover = a.photos?.[0];
+          return (
+            <Link
+              key={a.id}
+              href={`/animais/${a.slug}`}
+              className="group relative overflow-hidden rounded-2xl bg-neutral-100 shadow-md"
+            >
+              {cover && (
+                <Image
+                  src={cover.url}
+                  alt={cover.alt}
+                  width={600}
+                  height={800}
+                  className="h-56 w-full object-cover group-hover:scale-105 transition-transform"
+                />
+              )}
+              <div className="absolute inset-x-0 bottom-0 bg-black/40 text-white p-2 text-sm">
+                <div className="font-semibold truncate">{a.nome}</div>
+                <div className="opacity-90">
+                  {a.especie} • {a.porte.toLowerCase()}
+                </div>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </SectionShell>
+  );
+}
