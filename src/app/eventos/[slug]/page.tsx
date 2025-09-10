@@ -17,9 +17,10 @@ function normalizeSlug(raw: string) {
     .trim()
     .toLowerCase()
     .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "") // remove acentos
-    .replace(/\s+/g, "-") // espaços -> hífen
-    .replace(/-+/g, "-"); // colapsa hífens
+    .replace(/[\u0300-\u036f]/g, "") // remove acentos (sem \p{...} e sem flag u)
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/(^-|-$)/g, "");
 }
 
 export async function generateMetadata({ params }: PageParams) {

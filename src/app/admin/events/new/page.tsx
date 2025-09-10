@@ -11,9 +11,10 @@ function normalizeSlug(raw: string) {
     .trim()
     .toLowerCase()
     .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
+    .replace(/[\u0300-\u036f]/g, "") // remove acentos (sem \p{...} e sem flag u)
     .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
+    .replace(/-+/g, "-")
+    .replace(/(^-|-$)/g, "");
 }
 
 export default function NewEvent() {
