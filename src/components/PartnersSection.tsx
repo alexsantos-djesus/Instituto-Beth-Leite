@@ -28,26 +28,26 @@ export default async function PartnersSection({
   });
 
   return (
-    <SectionShell id={id} tone="cyan">
+    <SectionShell id={id} tone="teal">
       <div className="flex items-start justify-between">
         <h2 className="text-2xl sm:text-3xl font-extrabold">{title}</h2>
         <Link
           href={ctaHref}
-          className="hidden sm:inline-flex rounded-full px-4 py-2 bg-cyan-600 text-white hover:bg-cyan-700"
+          className="hidden sm:inline-flex rounded-full px-4 py-2 bg-teal-600 text-white hover:bg-teal-700"
         >
           {ctaLabel}
         </Link>
       </div>
 
       {items.length === 0 ? (
-        <div className="mt-4 rounded-2xl bg-white p-5 text-neutral-700 ring-1 ring-cyan-200/60">
+        <div className="mt-4 rounded-2xl bg-white p-5 text-neutral-700 ring-1 ring-teal-200/60">
           Em breve divulgaremos os parceiros que acreditam na causa. 🐾
         </div>
       ) : (
         <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {items.map((p) => {
             const card = (
-              <div className="group rounded-2xl bg-white ring-1 ring-cyan-200/60 shadow-card hover:shadow-md transition p-3">
+              <div className="group rounded-2xl bg-white ring-1 ring-teal-200/60 shadow-card hover:shadow-md transition p-3">
                 <div className="relative h-16 sm:h-20">
                   <Image
                     src={p.logoUrl}
@@ -74,7 +74,7 @@ export default async function PartnersSection({
 
       <Link
         href={ctaHref}
-        className="sm:hidden mt-4 inline-flex rounded-full px-4 py-2 bg-cyan-600 text-white hover:bg-cyan-700"
+        className="sm:hidden mt-4 inline-flex rounded-full px-4 py-2 bg-teal-600 text-white hover:bg-teal-700"
       >
         {ctaLabel}
       </Link>
