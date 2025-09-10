@@ -16,7 +16,6 @@ function ensureToastHost() {
   if (!host) {
     host = document.createElement("div");
     host.id = "toast-host";
-    // host centralizado no topo, largura máx grande, sem bloquear cliques atrás
     host.className =
       "fixed top-6 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-[min(92vw,760px)] " +
       "flex flex-col items-center gap-3 pointer-events-none";
@@ -27,9 +26,7 @@ function ensureToastHost() {
 
 type ToastOptions = {
   variant?: "success" | "error" | "info";
-  /** sm | md | lg (lg = “grande”) */
   size?: "sm" | "md" | "lg";
-  /** duração em ms */
   duration?: number;
 };
 function toast(message: string, opts: ToastOptions = {}) {
@@ -57,17 +54,10 @@ function toast(message: string, opts: ToastOptions = {}) {
   const el = document.createElement("div");
   el.setAttribute("role", "status");
   el.className = `${base} ${sizeCls} ${colorCls}`;
-
-  // conteúdo
-  el.innerHTML = `
-    <div class="grow text-center">${message}</div>
-  `;
-
-  // animação
+  el.innerHTML = `<div class="grow text-center">${message}</div>`;
   el.style.opacity = "0";
   el.style.transform = "translateY(-10px)";
   el.style.transition = "opacity .25s ease, transform .25s ease";
-
   host.appendChild(el);
   requestAnimationFrame(() => {
     el.style.opacity = "1";
@@ -75,14 +65,12 @@ function toast(message: string, opts: ToastOptions = {}) {
   });
 
   const t = window.setTimeout(() => close(), duration);
-
   function close() {
     window.clearTimeout(t);
     el.style.opacity = "0";
     el.style.transform = "translateY(-10px)";
     window.setTimeout(() => el.remove(), 250);
   }
-
   return { close };
 }
 
@@ -115,43 +103,25 @@ const enumSelect = <T extends readonly string[]>(vals: T) =>
 const TempoAusente = ["ATE_4H", "H4_8", "H8_12", "12H_PLUS"] as const;
 
 const PerfilSchemaBase = z.object({
-  // 1 - Você trabalha fora?
   trabalhaFora: enumSelect(["SIM", "NAO"] as const),
-  // 2 - (condicional)
   tempoAusente: z.enum(TempoAusente).optional(),
-  // 3
   ramoTrabalho: z.string().min(2, "Informe seu ramo de trabalho").max(120),
-  // 4
   alguemEmCasaDia: enumSelect(["SIM", "NAO"] as const),
-  // 5
   moradoresQtd: z.coerce.number().int().min(1, "Informe um número").max(50),
-  // 6
   haCriancas: enumSelect(["SIM", "NAO"] as const),
-  // 7
   idadeResponsavel: z.coerce.number().int().min(18, "Responsável deve ter 18+").max(120),
-  // 9 (facebook/instagram – campo livre)
   redesSociais: z.string().optional().default(""),
-  // 10
   moradiaTipo: enumSelect(["CASA", "APTO"] as const),
-  // 11
   casaBemFechada: enumSelect(["SIM", "NAO"] as const),
-  // 12
   imovelTipo: enumSelect(["PROPRIO", "ALUGADO"] as const),
-  // 13
   possuiOutrosAnimais: enumSelect(["SIM", "NAO"] as const),
-  // 14/15 (condicionais)
   qtdCaes: z.coerce.number().int().min(0).max(50).optional(),
   qtdGatos: z.coerce.number().int().min(0).max(50).optional(),
   castrados: enumSelect(["SIM", "NAO"] as const).optional(),
-  // 16
   sabeImportanciaCastracao: enumSelect(["SIM", "NAO"] as const),
-  // 17
   ondeVivera: enumSelect(["DENTRO", "QUINTAL", "MISTO"] as const),
-  // 18
   morreuAnimalRecente: enumSelect(["SIM", "NAO"] as const),
-  // 19
   condicoesFinanceirasVet: enumSelect(["SIM", "NAO"] as const),
-  // 20
   verOutrosSeNaoSelecionado: enumSelect(["SIM", "NAO"] as const),
 });
 
@@ -190,12 +160,11 @@ const FormSchema = z.object({
     .min(1, "Informe seu telefone")
     .transform((v) => {
       let d = onlyDigits(v);
-      if (d.startsWith("55")) d = d.slice(2); // <— remove o +55
-      return d; // passa adiante apenas DDD + número (11 dígitos)
+      if (d.startsWith("55")) d = d.slice(2);
+      return d;
     })
     .refine((d) => d.length === 11, "Telefone deve ter DDD + 9 dígitos (11 números)"),
 
-  // ENDEREÇO
   cep: z
     .string()
     .min(1, "Informe o CEP")
@@ -284,7 +253,7 @@ export default function FormClient({
     if (defaultAnimalId) setValue("animalId", defaultAnimalId);
   }, [defaultAnimalId, setValue]);
 
-  // CEP -> autopreenche endereço com cep-promise
+  // CEP -> autopreenche endereço
   const cepDigits = watch("cep");
   useEffect(() => {
     const d = onlyDigits(cepDigits || "");
@@ -297,7 +266,7 @@ export default function FormClient({
         setValue("uf", `${data.state}`.toUpperCase(), { shouldValidate: true });
       })
       .catch(() => {
-        // Se der erro, apenas não preenche; user pode digitar
+        // usuário pode digitar manualmente
       });
   }, [cepDigits, setValue]);
 
@@ -306,7 +275,6 @@ export default function FormClient({
     const res = await fetch("/api/requests", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      // Envia tudo; cidade/uf continuam existindo para o backend atual
       body: JSON.stringify({ ...data, telefone: data.telefone }),
     });
     setLoading(false);
