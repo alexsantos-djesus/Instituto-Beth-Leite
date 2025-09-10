@@ -279,7 +279,7 @@ export default function NewAnimalPage() {
         </div>
 
         <div className="space-y-2">
-          <CloudinaryUploader onAdd={addFotos} />
+          <CloudinaryUploader label="Enviar fotos" onAdd={(urls) => addFotos(urls.map((u) => ({ url: u })))}/>
           <div className="flex flex-wrap gap-2">
             {fotos.map((f, i) => (
               <div
