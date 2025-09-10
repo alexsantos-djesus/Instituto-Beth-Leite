@@ -9,6 +9,7 @@ import Select from "@/components/Select";
 import Textarea from "@/components/Textarea";
 import Button from "@/components/Button";
 import cepPromise from "cep-promise";
+import type { Resolver } from "react-hook-form";
 
 /* ------------ Toast minimalista ------------ */
 function ensureToastHost() {
@@ -204,7 +205,7 @@ export default function FormClient({
     setValue,
     watch,
   } = useForm<FormData>({
-    resolver: zodResolver(FormSchema),
+    resolver: zodResolver(FormSchema) as unknown as Resolver<FormData>,
     defaultValues: {
       cep: "",
       endereco: "",
