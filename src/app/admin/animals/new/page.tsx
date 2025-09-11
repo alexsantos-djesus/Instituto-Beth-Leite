@@ -34,6 +34,7 @@ export default function NewAnimalPage() {
     convivencia: "",
     saudeDetalhes: "",
     dataResgate: "",
+    fivFelvTested: null as null | boolean,
   });
 
   const [fotos, setFotos] = useState<Photo[]>([]);
@@ -64,6 +65,7 @@ export default function NewAnimalPage() {
       convivencia: form.convivencia.trim() || null,
       saudeDetalhes: form.saudeDetalhes.trim() || null,
       dataResgate: form.dataResgate ? new Date(form.dataResgate) : null,
+      fivFelvTested: form.especie === "GATO" ? form.fivFelvTested : null,
       photos: fotos.map((p, i) => ({
         url: p.url,
         alt: p.alt || form.nome,
@@ -125,6 +127,7 @@ export default function NewAnimalPage() {
               }}
             />
           </label>
+
           <label className="block">
             <span className="text-sm">Slug</span>
             <input
@@ -145,6 +148,25 @@ export default function NewAnimalPage() {
               <option value="CACHORRO">CACHORRO</option>
             </select>
           </label>
+
+          {/* bloco FIV/FELV aparece só quando for GATO */}
+          {form.especie === "GATO" && (
+            <label className="block">
+              <span className="text-sm">Testado FIV/FELV?</span>
+              <select
+                className="w-full border rounded-xl px-3 py-2 mt-1"
+                value={form.fivFelvTested === null ? "" : form.fivFelvTested ? "SIM" : "NAO"}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  onChange("fivFelvTested", v === "" ? null : v === "SIM");
+                }}
+              >
+                <option value="">Selecione</option>
+                <option value="SIM">SIM</option>
+                <option value="NAO">NÃO</option>
+              </select>
+            </label>
+          )}
 
           <label className="block">
             <span className="text-sm">Sexo</span>
@@ -279,7 +301,10 @@ export default function NewAnimalPage() {
         </div>
 
         <div className="space-y-2">
-          <CloudinaryUploader label="Enviar fotos" onAdd={(urls) => addFotos(urls.map((u) => ({ url: u })))}/>
+          <CloudinaryUploader
+            label="Enviar fotos"
+            onAdd={(urls) => addFotos(urls.map((u) => ({ url: u })))}
+          />
           <div className="flex flex-wrap gap-2">
             {fotos.map((f, i) => (
               <div

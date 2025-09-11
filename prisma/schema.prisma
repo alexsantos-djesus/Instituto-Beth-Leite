@@ -26,11 +26,12 @@ model Animal {
   descricao    String
   adotado   Boolean  @default(false)
   adotadoEm DateTime?
-
   historiaResgate String?
   convivencia     String?
   saudeDetalhes   String?
   dataResgate     DateTime?
+  fivFelvTested    Boolean?
+   oculto         Boolean   @default(false)
 
   @@index      ([adotado, adotadoEm])
   photos       Photo[]

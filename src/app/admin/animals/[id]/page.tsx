@@ -22,6 +22,7 @@ type Animal = {
   saudeDetalhes?: string | null;
   dataResgate?: string | null;
   photos: { id: number; url: string; alt: string; isCover: boolean }[];
+  fivFelvTested?: boolean | null;
 };
 
 export default function EditAnimal({ params }: { params: { id: string } }) {
@@ -85,6 +86,7 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
                 onChange={(e) => updateField("nome", e.target.value)}
               />
             </label>
+
             <label className="block">
               <span className="text-sm">Slug</span>
               <input
@@ -105,6 +107,25 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
                 <option value="CACHORRO">CACHORRO</option>
               </select>
             </label>
+
+            {/* bloco FIV/FELV aparece só quando for GATO */}
+            {data.especie === "GATO" && (
+              <label className="block">
+                <span className="text-sm">Testado FIV/FELV?</span>
+                <select
+                  className="w-full mt-1 border rounded-xl px-3 py-2"
+                  value={data.fivFelvTested == null ? "" : data.fivFelvTested ? "SIM" : "NAO"}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    updateField("fivFelvTested", v === "" ? null : v === "SIM");
+                  }}
+                >
+                  <option value="">Selecione</option>
+                  <option value="SIM">SIM</option>
+                  <option value="NAO">NÃO</option>
+                </select>
+              </label>
+            )}
 
             <label className="block">
               <span className="text-sm">Sexo</span>

@@ -23,7 +23,7 @@ export default async function AnimaisPage({
   const q = (searchParams.q as string) || undefined;
   const faixa = (searchParams.faixa as string) || undefined;
 
-  const where: any = {};
+  const where: any = { oculto: false };
   if (especie) where.especie = especie;
   if (porte) where.porte = porte;
   if (sexo) where.sexo = sexo;
@@ -56,14 +56,7 @@ export default async function AnimaisPage({
 
   return (
     <>
-      <section
-        className="
-          relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]
-          -mt-[var(--header-h)] pt-[calc(var(--header-h)+16px)]
-          bg-gradient-to-b from-[#66ff94] via-[#bfffda] to-[#f1fffc]
-          overflow-hidden
-        "
-      >
+      <section className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-[var(--header-h)] pt-[calc(var(--header-h)+16px)] bg-gradient-to-b from-[#66ff94] via-[#bfffda] to-[#f1fffc] overflow-hidden">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.14] md:opacity-[0.16]"

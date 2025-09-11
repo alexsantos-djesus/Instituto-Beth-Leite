@@ -36,7 +36,9 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
   });
   if (!animal) notFound();
 
-  if (animal.adotado) notFound();
+  // não mostrar página pública de animal adotado
+  if (animal.oculto || animal.adotado) notFound();
+
   const fotos = animal.photos ?? [];
   const capa = fotos[0];
   const extra = fotos.slice(1, 3);
@@ -201,6 +203,17 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
 }
 
 function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: any) {
+  // === NOVO: flags para exibição condicional ===
+  const hasRescue =
+    Boolean(animal.historiaResgate) &&
+    typeof animal.historiaResgate === "string" &&
+    animal.historiaResgate.trim().length > 0;
+
+  const showFivFelv =
+    animal.especie === "GATO" &&
+    animal.fivFelvTested !== null &&
+    animal.fivFelvTested !== undefined;
+
   return (
     <div className="mt-12 md:mt-16 grid lg:grid-cols-3 gap-8">
       <div className="lg:col-span-2 space-y-6">
@@ -211,11 +224,12 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
           </p>
         </div>
 
-        {(animal as any).historiaResgate || animal.temperamento ? (
+        {/* === NOVO: mostrar História do resgate somente quando houver texto === */}
+        {hasRescue && (
           <div className="bg-white rounded-2xl p-6 shadow-card">
             <h3 className="font-bold text-lg mb-2">História do resgate</h3>
             <p className="text-neutral-700 whitespace-pre-line">
-              {(animal as any).historiaResgate ?? "Em breve vamos contar como foi o meu resgate. Estou pronto(a) para um novo capítulo!"}
+              {animal.historiaResgate}
             </p>
             {animal.temperamento ? (
               <p className="mt-3 text-sm text-neutral-600">
@@ -223,20 +237,20 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
               </p>
             ) : null}
           </div>
-        ) : null}
+        )}
 
-        {(animal as any).convivencia ? (
+        {animal.convivencia ? (
           <div className="bg-white rounded-2xl p-6 shadow-card">
             <h3 className="font-bold text-lg mb-2">Convivência</h3>
             <ul className="list-disc pl-5 space-y-1 text-neutral-800">
-              {(animal as any).convivencia.split("\n").map((linha: string, i: number) => (
+              {animal.convivencia.split("\n").map((linha: string, i: number) => (
                 <li key={i}>{linha.trim()}</li>
               ))}
             </ul>
           </div>
         ) : null}
 
-        {(animal as any).saudeDetalhes || animal.vacinado || animal.castrado ? (
+        {animal.saudeDetalhes || animal.vacinado || animal.castrado ? (
           <div className="bg-white rounded-2xl p-6 shadow-card">
             <h3 className="font-bold text-lg mb-4">Saúde & cuidados</h3>
             <div className="grid sm:grid-cols-2 gap-3">
@@ -253,9 +267,9 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
                 </span>
               </div>
             </div>
-            {(animal as any).saudeDetalhes ? (
+            {animal.saudeDetalhes ? (
               <p className="mt-3 text-sm text-neutral-700">
-                <span className="font-semibold">Observações:</span> {(animal as any).saudeDetalhes}
+                <span className="font-semibold">Observações:</span> {animal.saudeDetalhes}
               </p>
             ) : null}
           </div>
@@ -291,6 +305,14 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
             <dt className="text-neutral-600">Idade</dt>
             <dd>{idadeEmTexto(animal.idadeMeses)}</dd>
             {animal.raca ? (<><dt className="text-neutral-600">Raça</dt><dd>{animal.raca}</dd></>) : null}
+
+            {/* === NOVO: FIV/FELV apenas quando for gato e tiver valor === */}
+            {showFivFelv && (
+              <>
+                <dt className="text-neutral-600">Testado FIV/FELV</dt>
+                <dd>{animal.fivFelvTested ? "SIM" : "NÃO"}</dd>
+              </>
+            )}
           </dl>
           <div className="mt-3 flex flex-wrap gap-2">
             {chip(<><PawPrint className="h-4 w-4" /> Pronto para amar</>)}
