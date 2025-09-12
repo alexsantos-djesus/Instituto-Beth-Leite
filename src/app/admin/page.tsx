@@ -73,7 +73,7 @@ export default function AdminDashboard() {
             <button className="rounded-full bg-neutral-900 text-white px-4 py-2">Entrar</button>
           </form>
           <p className="text-xs text-neutral-500 mt-3">
-            Qualquer problema, fale com a gente pelo Instagram: @institutobethleite
+            Qualquer problema, fale com a gente pelo Instagram: @Debuguei
           </p>
         </div>
       </Container>

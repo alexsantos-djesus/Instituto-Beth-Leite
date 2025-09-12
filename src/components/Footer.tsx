@@ -11,7 +11,6 @@ export default function Footer() {
       role="contentinfo"
       className="mt-16 border-t border-yellow-400/50 bg-brand-primary text-neutral-900 relative"
     >
-
       <div aria-hidden className="ft-paws pointer-events-none absolute inset-0 z-0 opacity-10" />
 
       <style jsx>{`
@@ -21,7 +20,12 @@ export default function Footer() {
           background-position: center calc(100% - 50px);
           background-size: clamp(1300px, 88vw, 1800px);
         }
-        @media (min-width: 1024px) {.ft-paws { background-size: clamp(1350px, 88vw, 1600px);}}`}</style>
+        @media (min-width: 1024px) {
+          .ft-paws {
+            background-size: clamp(1350px, 88vw, 1600px);
+          }
+        }
+      `}</style>
 
       <div className="container relative z-[1] max-w-6xl px-4 sm:px-6">
         <div className="py-6 sm:py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -110,11 +114,11 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="mailto:contato@institutobethleite.org"
+                  href="mailto:contato@institutobethleite.com.br"
                   className="underline underline-offset-2 hover:opacity-80 inline-flex items-center gap-2"
                 >
                   <Mail className="h-4 w-4" />
-                  contato@institutobethleite.org
+                  contato@institutobethleite.com.br
                 </a>
               </li>
             </ul>

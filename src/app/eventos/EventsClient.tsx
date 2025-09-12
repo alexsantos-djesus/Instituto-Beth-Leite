@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
 
 /* -------- tipos -------- */
 type Event = {
@@ -22,14 +23,11 @@ type Event = {
 /* -------- helpers robustos -------- */
 function parseISO(iso?: string | null): Date | null {
   if (!iso) return null;
-
-  // Se vier no formato YYYY-MM-DD, criamos a data em fuso LOCAL (sem UTC)
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
   if (m) {
     const [, y, mo, d] = m;
-    return new Date(Number(y), Number(mo) - 1, Number(d)); // local midnight
+    return new Date(Number(y), Number(mo) - 1, Number(d));
   }
-
   const d = new Date(iso);
   return isNaN(d.getTime()) ? null : d;
 }
@@ -48,6 +46,22 @@ function fmtData(iso: string) {
   return new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(d);
 }
 
+/* -------- animação -------- */
+const fadeUp = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0 } };
+const list = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.12 } },
+};
+const item = {
+  hidden: { opacity: 0, y: 16, scale: 0.98 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: "spring", stiffness: 420, damping: 28 },
+  },
+};
+
 /* -------- UI -------- */
 function Badge({ children }: { children: React.ReactNode }) {
   return (
@@ -62,9 +76,21 @@ function EventCard({ e }: { e: Event }) {
   const dataFormatada = fmtData(e.data);
 
   return (
-    <article className="group rounded-2xl bg-white ring-1 ring-teal-100 overflow-hidden shadow-sm hover:shadow-md transition">
-      <div className="relative aspect-[16/9] bg-neutral-100">
-        {e.img ? <Image src={e.img} alt={e.titulo} fill className="object-cover" /> : null}
+    <motion.article
+      variants={item}
+      whileHover={{ y: -2, scale: 1.01 }}
+      transition={{ type: "spring", stiffness: 260, damping: 18 }}
+      className="group rounded-2xl bg-white ring-1 ring-teal-100 overflow-hidden shadow-sm hover:shadow-md"
+    >
+      <div className="relative aspect-[16/9] bg-neutral-100 overflow-hidden">
+        {e.img ? (
+          <Image
+            src={e.img}
+            alt={e.titulo}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
+        ) : null}
         <div className="absolute left-3 top-3 flex gap-2">
           <Badge>{e.tipo}</Badge>
           {e.destaque ? <Badge>🎉 destaque</Badge> : null}
@@ -104,7 +130,7 @@ function EventCard({ e }: { e: Event }) {
           ) : null}
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 }
 
@@ -130,9 +156,14 @@ function groupAndSort(evts: Event[]) {
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <div className="col-span-full text-center py-10 rounded-2xl bg-white ring-1 ring-teal-100">
+    <motion.div
+      variants={fadeUp}
+      initial="hidden"
+      animate="show"
+      className="col-span-full text-center py-10 rounded-2xl bg-white ring-1 ring-teal-100"
+    >
       <p className="text-neutral-700">{children}</p>
-    </div>
+    </motion.div>
   );
 }
 
@@ -148,27 +179,42 @@ export default function EventsClient({ initialEvents }: { initialEvents: Event[]
 
   return (
     <section className="mt-4">
-      <div className="inline-flex rounded-xl bg-white ring-1 ring-teal-100 p-1 shadow-sm">
-        {(["proximos", "passados", "todos"] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition ${
-              tab === t ? "bg-teal-600 text-white shadow-sm" : "text-neutral-700 hover:bg-teal-50"
-            }`}
-          >
-            {t === "proximos" ? "Próximos" : t === "passados" ? "Passados" : "Todos"}
-          </button>
-        ))}
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="inline-flex rounded-xl bg-white ring-1 ring-teal-100 p-1 shadow-sm"
+      >
+        {(["proximos", "passados", "todos"] as const).map((t) => {
+          const active = tab === t;
+          return (
+            <motion.button
+              key={t}
+              onClick={() => setTab(t)}
+              whileTap={{ scale: 0.98 }}
+              whileHover={{ y: -1 }}
+              className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition ${
+                active ? "bg-teal-600 text-white shadow-sm" : "text-neutral-700 hover:bg-teal-50"
+              }`}
+            >
+              {t === "proximos" ? "Próximos" : t === "passados" ? "Passados" : "Todos"}
+            </motion.button>
+          );
+        })}
+      </motion.div>
 
-      <div className="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <motion.div
+        variants={list}
+        initial="hidden"
+        animate="show"
+        className="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
+      >
         {list.length === 0 ? (
           <Empty>Nenhum evento nesta aba por enquanto. 🐾</Empty>
         ) : (
           list.map((e) => <EventCard key={e.id} e={e} />)
         )}
-      </div>
+      </motion.div>
     </section>
   );
 }

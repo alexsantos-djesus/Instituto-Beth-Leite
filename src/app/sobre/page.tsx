@@ -1,3 +1,4 @@
+// src/app/sobre/page.tsx
 import Container from "@/components/Container";
 import Link from "next/link";
 import {
@@ -16,6 +17,9 @@ import {
 import PartnersSection from "@/components/PartnersSection";
 import { prisma } from "@/lib/prisma";
 
+// 🎬 add: wrappers de animação (client components já prontos)
+import { AnimatedHero, FadeIn, Stagger, CardHover } from "@/components/animated";
+
 export const metadata = {
   title: "Sobre o Instituto — Instituto Beth Leite",
   description: "Nossa história, missão e valores.",
@@ -32,7 +36,8 @@ export default async function SobrePage() {
 
   return (
     <>
-      <section
+      {/* HERO com entrada suave */}
+      <AnimatedHero
         className="
           relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]
           -mt-[var(--header-h)] pt-[calc(var(--header-h)+18px)]
@@ -51,7 +56,7 @@ export default async function SobrePage() {
           }}
         />
         <Container>
-          <div className="py-10 sm:py-14 md:py-18">
+          <FadeIn className="py-10 sm:py-14 md:py-18">
             <span className="inline-flex items-center gap-2 rounded-full bg-white/70 ring-1 ring-cyan-200 px-3 py-1 text-sm text-cyan-900">
               <PawPrint className="h-4 w-4" /> adoção responsável
             </span>
@@ -63,7 +68,7 @@ export default async function SobrePage() {
               bem-estar animal. Unimos voluntários, parceiros e a comunidade para transformar
               histórias por meio de <em>resgate, cuidado, acolhimento</em> e muito carinho.
             </p>
-          </div>
+          </FadeIn>
         </Container>
         <svg
           className="block w-full h-[28px] text-white"
@@ -75,10 +80,11 @@ export default async function SobrePage() {
             fill="currentColor"
           />
         </svg>
-      </section>
+      </AnimatedHero>
 
       <Container>
-        <section className="mt-8 grid md:grid-cols-3 gap-6">
+        {/* Missão / Visão / Valores com stagger */}
+        <Stagger className="mt-8 grid md:grid-cols-3 gap-6">
           <Card title="Missão" icon={<HeartHandshake className="h-5 w-5" />}>
             Promover o bem-estar animal por meio de resgates, reabilitação e
             <br className="hidden sm:block" /> adoção responsável – com transparência e afeto.
@@ -90,11 +96,12 @@ export default async function SobrePage() {
           <Card title="Valores" icon={<ShieldCheck className="h-5 w-5" />}>
             Cuidado, responsabilidade, respeito, transparência e trabalho em rede.
           </Card>
-        </section>
+        </Stagger>
 
+        {/* O que fazemos – itens entram em sequência */}
         <section className="mt-10">
           <h2 className="text-xl sm:text-2xl font-extrabold">O que fazemos</h2>
-          <div className="mt-4 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Stagger className="mt-4 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Feature
               icon={<Stethoscope className="h-5 w-5" />}
               title="Resgate & cuidados veterinários"
@@ -125,24 +132,28 @@ export default async function SobrePage() {
               title="Feiras & ações"
               desc="Eventos de adoção, mutirões de castração e parcerias com a comunidade."
             />
-          </div>
+          </Stagger>
         </section>
 
+        {/* KPIs com fade e leve pop */}
         <section className="mt-10">
           <h2 className="text-xl sm:text-2xl font-extrabold">Nosso impacto</h2>
           <p className="mt-2 text-neutral-700">
             Indicadores calculados automaticamente a partir do banco de dados.
           </p>
-          <div className="mt-6 grid sm:grid-cols-3 gap-4">
+          <Stagger className="mt-6 grid sm:grid-cols-3 gap-4">
             <Stat number={fmt(animalsCount)} label="Animais cadastrados" />
             <Stat number={fmt(requestsCount)} label="Solicitações de adoção" />
             <Stat number={fmt(partnersCount)} label="Parceiros ativos" />
-          </div>
-          <p className="mt-2 text-sm text-neutral-500">
-            * Em breve traremos outros indicadores (ex.: adoções concluídas).
-          </p>
+          </Stagger>
+          <FadeIn className="mt-2">
+            <p className="text-sm text-neutral-500">
+              * Em breve traremos outros indicadores (ex.: adoções concluídas).
+            </p>
+          </FadeIn>
         </section>
 
+        {/* Mantido como estava */}
         <PartnersSection
           id="parceiros"
           title="Parceiros & apoiadores"
@@ -151,6 +162,7 @@ export default async function SobrePage() {
           ctaLabel="Seja parceiro"
         />
 
+        {/* Cards de navegação com hover animado */}
         <section className="mt-12 grid md:grid-cols-3 gap-6">
           <LinkCard
             href="/como-ajudar"
@@ -169,18 +181,23 @@ export default async function SobrePage() {
           />
         </section>
 
-        <section className="mt-12 mb-16">
+        <FadeIn className="mt-12 mb-16">
           <div className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-cyan-200/50">
             <p className="text-neutral-700">
               Cada vida salva é resultado de uma rede: tutores responsáveis, voluntários, parceiros,
               profissionais de saúde e doadores. Obrigado por caminhar com a gente. 🐾
             </p>
           </div>
-        </section>
+        </FadeIn>
       </Container>
     </>
   );
 }
+
+/* =====================
+ * componentes da página
+ * (ganharam apenas toques de animação/hover)
+ * ===================== */
 
 function Card({
   title,
@@ -192,52 +209,51 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-cyan-200/60">
+    <FadeIn className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-cyan-200/60 hover:shadow-lg transition">
       <div className="inline-flex items-center gap-2 rounded-full bg-cyan-50 ring-1 ring-cyan-200 px-2.5 py-1 text-cyan-900 text-sm">
         {icon}
         <span className="font-semibold">{title}</span>
       </div>
       <p className="mt-3 text-neutral-700">{children}</p>
-    </div>
+    </FadeIn>
   );
 }
 
 function Feature({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-card ring-1 ring-cyan-200/60">
+    <FadeIn className="rounded-2xl bg-white p-5 shadow-card ring-1 ring-cyan-200/60 hover:shadow-lg transition">
       <div className="inline-flex items-center gap-2 rounded-full bg-cyan-50 ring-1 ring-cyan-200 px-2.5 py-1 text-cyan-900 text-sm">
         {icon}
         <span className="font-semibold">{title}</span>
       </div>
       <p className="mt-2 text-neutral-700">{desc}</p>
-    </div>
+    </FadeIn>
   );
 }
 
 function Stat({ number, label }: { number: string; label: string }) {
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-cyan-200/60 text-center">
+    <FadeIn className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-cyan-200/60 text-center">
       <div className="text-3xl sm:text-4xl font-extrabold text-neutral-900">{number}</div>
       <div className="mt-1 text-neutral-600">{label}</div>
-    </div>
+    </FadeIn>
   );
 }
 
 function LinkCard({ href, title, desc }: { href: string; title: string; desc: string }) {
   return (
-    <Link
-      href={href}
-      className="group rounded-2xl bg-white p-6 shadow-card ring-1 ring-cyan-200/60 hover:shadow-lg transition"
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="text-lg font-bold">{title}</h3>
-          <p className="mt-1 text-neutral-700">{desc}</p>
+    <Link href={href} className="block">
+      <CardHover className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-cyan-200/60">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-bold">{title}</h3>
+            <p className="mt-1 text-neutral-700">{desc}</p>
+          </div>
+          <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-cyan-600 text-white">
+            <ArrowRight className="h-4 w-4" />
+          </span>
         </div>
-        <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-cyan-600 text-white group-hover:bg-cyan-700">
-          <ArrowRight className="h-4 w-4" />
-        </span>
-      </div>
+      </CardHover>
     </Link>
   );
 }

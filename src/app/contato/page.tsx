@@ -1,5 +1,8 @@
+// src/app/contato/page.tsx
 import Container from "@/components/Container";
 import { ChevronDown, Mail, Instagram } from "lucide-react";
+
+import { AnimatedHero, FadeIn, Stagger, CardHover, FaqAnimated } from "@/components/animated";
 
 export const metadata = {
   title: "Contato — Instituto Beth Leite",
@@ -24,7 +27,7 @@ const faq = [
 export default function ContatoPage() {
   return (
     <>
-      <section
+      <AnimatedHero
         className="
           relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]
           -mt-[var(--header-h)] pt-[calc(var(--header-h)+18px)]
@@ -43,7 +46,7 @@ export default function ContatoPage() {
           }}
         />
         <Container>
-          <div className="py-10 sm:py-14">
+          <FadeIn className="py-10 sm:py-14">
             <span className="inline-flex items-center gap-2 rounded-full bg-white/70 ring-1 ring-emerald-200 px-3 py-1 text-sm text-emerald-900">
               📬 fale com a gente
             </span>
@@ -53,7 +56,7 @@ export default function ContatoPage() {
             <p className="mt-3 max-w-3xl text-neutral-700 text-lg">
               Dúvidas, sugestões ou parcerias? Escreva pra gente — será um prazer responder.
             </p>
-          </div>
+          </FadeIn>
         </Container>
         <svg
           className="block w-full h-[28px] text-white"
@@ -65,52 +68,47 @@ export default function ContatoPage() {
             fill="currentColor"
           />
         </svg>
-      </section>
+      </AnimatedHero>
 
       <Container>
-        <div className="mt-8 grid sm:grid-cols-2 gap-4">
-          <a
-            href="mailto:contato@institutobethleite.org"
-            className="rounded-2xl bg-white p-5 shadow-card ring-1 ring-emerald-200/60 hover:shadow-lg transition flex items-center gap-3"
-          >
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white">
-              <Mail className="h-5 w-5" />
-            </span>
-            <div>
-              <div className="font-semibold">E-mail</div>
-              <div className="text-neutral-700">contato@institutobethleite.org</div>
-            </div>
+        <Stagger className="mt-8 grid sm:grid-cols-2 gap-4">
+          <a href="mailto:contato@institutobethleite.com.br" className="block">
+            <CardHover className="rounded-2xl bg-white p-5 shadow-card ring-1 ring-emerald-200/60">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white">
+                <Mail className="h-5 w-5" />
+              </span>
+              <div>
+                <div className="font-semibold">E-mail</div>
+                <div className="text-neutral-700">contato@institutobethleite.com.br</div>
+              </div>
+            </CardHover>
           </a>
 
           <a
-            href="https://instagram.com/"
+            href="https://instagram.com/institutobethleite"
             target="_blank"
             rel="noreferrer"
-            className="rounded-2xl bg-white p-5 shadow-card ring-1 ring-emerald-200/60 hover:shadow-lg transition flex items-center gap-3"
+            className="block"
           >
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white">
-              <Instagram className="h-5 w-5" />
-            </span>
-            <div>
-              <div className="font-semibold">Instagram</div>
-              <div className="text-neutral-700">@institutobethleite</div>
-            </div>
+            <CardHover className="rounded-2xl bg-white p-5 shadow-card ring-1 ring-emerald-200/60">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white">
+                <Instagram className="h-5 w-5" />
+              </span>
+              <div>
+                <div className="font-semibold">Instagram</div>
+                <div className="text-neutral-700">@institutobethleite</div>
+              </div>
+            </CardHover>
           </a>
-        </div>
+        </Stagger>
 
-        <h2 className="mt-10 font-bold text-lg">FAQ</h2>
+        <FadeIn className="mt-10">
+          <h2 className="font-bold text-lg">FAQ</h2>
+        </FadeIn>
+
         <div className="mt-3 space-y-3">
           {faq.map((f) => (
-            <details
-              key={f.q}
-              className="group rounded-2xl bg-white p-4 shadow-card ring-1 ring-emerald-200/60 open:ring-emerald-300/70"
-            >
-              <summary className="flex items-center justify-between cursor-pointer font-medium list-none">
-                <span>{f.q}</span>
-                <ChevronDown className="h-5 w-5 text-neutral-700 transition-transform group-open:rotate-180" />
-              </summary>
-              <p className="mt-2 text-neutral-700">{f.a}</p>
-            </details>
+            <FaqAnimated key={f.q} q={f.q} a={f.a} />
           ))}
         </div>
 

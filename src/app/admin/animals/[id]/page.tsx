@@ -297,7 +297,7 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
                   body: JSON.stringify({ url, alt: data.nome }),
                 });
                 const fresh = await fetch(`/api/admin/animals/${id}`).then((r) => r.json());
-                setData(fresh);
+                setData((prev) => (prev ? { ...prev, photos: fresh.photos ?? [] } : fresh));
               }}
             />
           </div>
@@ -316,7 +316,7 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
                         body: JSON.stringify({ isCover: true }),
                       });
                       const fresh = await fetch(`/api/admin/animals/${id}`).then((r) => r.json());
-                      setData(fresh);
+                      setData((prev) => (prev ? { ...prev, photos: fresh.photos ?? [] } : fresh));
                     }}
                     className="text-xs rounded-full bg-white/90 px-2 py-1"
                   >
@@ -327,7 +327,7 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
                     onClick={async () => {
                       await fetch(`/api/admin/photos/${p.id}`, { method: "DELETE" });
                       const fresh = await fetch(`/api/admin/animals/${id}`).then((r) => r.json());
-                      setData(fresh);
+                      setData((prev) => (prev ? { ...prev, photos: fresh.photos ?? [] } : fresh));
                     }}
                     className="text-xs rounded-full bg-white/90 px-2 py-1"
                   >

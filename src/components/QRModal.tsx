@@ -26,7 +26,7 @@ export default function QRModal({ url, nome, especie, sexo, children }: Props) {
       const accent = isMacho ? "#2563eb" : "#db2777"; // azul / rosa mais forte
 
       // Padrão de patinhas por espécie
-      const pawSrc = especie === "GATO" ? "/patinhas-gatos.png" : "/patinhas-cachorro.png";
+      const pawSrc = especie === "GATO" ? "/patinhas-gatos.png" : "/patinhas-cachorro.jpg";
 
       // Tamanho do “cartaz” (boa qualidade p/ imprimir em A5/A4)
       const W = 900;

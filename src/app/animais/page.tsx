@@ -1,9 +1,13 @@
+// src/app/animais/page.tsx
 import { prisma } from "@/lib/prisma";
 import Container from "@/components/Container";
 import AnimalCard from "@/components/AnimalCard";
 import FilterBar from "@/components/FilterBar";
 import { Metadata } from "next";
 import { PawPrint } from "lucide-react";
+
+// 👇 utilitários client-side de animação
+import { FadeIn, GrowIn, Stagger } from "@/components/animated";
 
 export const metadata: Metadata = {
   title: "Animais para Adoção — Instituto Beth Leite",
@@ -56,6 +60,7 @@ export default async function AnimaisPage({
 
   return (
     <>
+      {/* TOPO com fundo e entradas animadas */}
       <section className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-[var(--header-h)] pt-[calc(var(--header-h)+16px)] bg-gradient-to-b from-[#66ff94] via-[#bfffda] to-[#f1fffc] overflow-hidden">
         <div
           aria-hidden
@@ -69,17 +74,26 @@ export default async function AnimaisPage({
         />
         <Container>
           <div className="py-8 sm:py-10">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/70 ring-1 ring-emerald-200 px-3 py-1 text-sm text-emerald-900">
-              <PawPrint className="h-4 w-4" /> adoção responsável
-            </span>
-            <h1 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900">
-              Animais para Adoção
-            </h1>
-            <p className="mt-2 text-neutral-700">
-              Filtre por espécie, porte, sexo e idade para encontrar seu novo melhor amigo.
-            </p>
+            <FadeIn y={-6}>
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/70 ring-1 ring-emerald-200 px-3 py-1 text-sm text-emerald-900">
+                <PawPrint className="h-4 w-4" /> adoção responsável
+              </span>
+            </FadeIn>
+
+            <FadeIn delay={0.08}>
+              <h1 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900">
+                Animais para Adoção
+              </h1>
+            </FadeIn>
+
+            <FadeIn delay={0.16}>
+              <p className="mt-2 text-neutral-700">
+                Filtre por espécie, porte, sexo e idade para encontrar seu novo melhor amigo.
+              </p>
+            </FadeIn>
           </div>
         </Container>
+
         <svg
           className="block w-full h-[28px] text-white"
           viewBox="0 0 1440 64"
@@ -93,20 +107,30 @@ export default async function AnimaisPage({
       </section>
 
       <Container className="pt-4 md:pt-6">
-        <div className="bg-white rounded-2xl shadow-card ring-1 ring-emerald-200/60 p-4">
-          <FilterBar />
-        </div>
+        {/* Barra de filtros entra com “grow” */}
+        <GrowIn>
+          <div className="bg-white rounded-2xl shadow-card ring-1 ring-emerald-200/60 p-4">
+            <FilterBar />
+          </div>
+        </GrowIn>
 
         {animals.length === 0 ? (
-          <p className="mt-8 text-neutral-700">
-            Nenhum animal encontrado com os filtros aplicados.
-          </p>
+          <FadeIn>
+            <p className="mt-8 text-neutral-700">
+              Nenhum animal encontrado com os filtros aplicados.
+            </p>
+          </FadeIn>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          // Grade com stagger + hover sutil nas cards
+          <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6" gap={0.06}>
             {animals.map((a) => (
-              <AnimalCard key={a.id} animal={a} />
+              <FadeIn key={a.id}>
+                <div className="transition-transform duration-200 will-change-transform hover:scale-[1.0]">
+                  <AnimalCard animal={a} />
+                </div>
+              </FadeIn>
             ))}
-          </div>
+          </Stagger>
         )}
       </Container>
     </>

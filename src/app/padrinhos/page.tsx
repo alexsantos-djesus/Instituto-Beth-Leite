@@ -1,3 +1,4 @@
+// src/app/padrinhos/page.tsx
 import Link from "next/link";
 import Container from "@/components/Container";
 import { Great_Vibes } from "next/font/google";
@@ -14,6 +15,17 @@ import {
   CheckCircle2,
   Calendar,
 } from "lucide-react";
+
+// 👇 importa apenas wrappers/efeitos (client components)
+import {
+  AnimatedHero,
+  KpiAnimated,
+  ProgressAnimated,
+  GridStagger,
+  PlanoCardAnimated,
+  CardHover,
+  FaqAnimated,
+} from "@/components/animated";
 
 export const metadata = {
   title: "Padrinhos — Instituto Beth Leite",
@@ -40,7 +52,8 @@ export default function PadrinhosPage() {
 
   return (
     <>
-      <section
+      {/* === HERO com entrada suave === */}
+      <AnimatedHero
         className="
           relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]
           -mt-[var(--header-h)] pt-[calc(var(--header-h)+10px)]
@@ -96,16 +109,23 @@ export default function PadrinhosPage() {
             fill="currentColor"
           />
         </svg>
-      </section>
+      </AnimatedHero>
 
       <Container>
+        {/* === KPIs com fade-up === */}
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          <Kpi icon={<Users className="h-5 w-5" />} label="Padrinhos ativos" value={ativos} />
-          <Kpi
+          <KpiAnimated
+            icon={<Users className="h-5 w-5" />}
+            label="Padrinhos ativos"
+            value={ativos}
+          />
+          <KpiAnimated
             icon={<Trophy className="h-5 w-5" />}
             label="Animais apoiados"
             value={animaisApoiados}
           />
+
+          {/* Meta mensal com barra animada */}
           <div className="bg-white rounded-2xl p-5 shadow-card">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 font-semibold">
@@ -116,62 +136,62 @@ export default function PadrinhosPage() {
                 R$ {arrecadado.toLocaleString("pt-BR")} / R$ {metaMensal.toLocaleString("pt-BR")}
               </div>
             </div>
-            <div className="mt-3 h-3 rounded-full bg-neutral-100 overflow-hidden ring-1 ring-black/5">
-              <div
-                className="h-3 bg-brand-secondary"
-                style={{ width: `${progresso}%` }}
-                aria-valuenow={progresso}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                role="progressbar"
-              />
-            </div>
-            <div className="mt-1 text-right text-sm font-semibold text-neutral-700">
-              {progresso}%
-            </div>
+
+            {/* substitui a barra fixa por animação, mas mantém o % final */}
+            <ProgressAnimated percent={progresso} />
           </div>
         </div>
 
+        {/* === Planos com stagger + hover tilt sutil === */}
         <section className="mt-10">
           <h2 className="text-xl font-extrabold mb-3">Planos de apadrinhamento</h2>
           <p className="text-neutral-700 mb-5">
             Escolha o valor que cabe no seu orçamento. Você pode cancelar quando quiser.
           </p>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            <Plano
-              destaque={false}
-              nome="Bronze"
-              valor={30}
-              perks={[
-                "Atualizações periódicas",
-                "Certificado de padrinho",
-                "Entrada no grupo de novidades",
-              ]}
-            />
-            <Plano
-              destaque
-              nome="Prata"
-              valor={60}
-              perks={[
-                "Tudo do Bronze",
-                "Relatos mensais com fotos",
-                "Prioridade em visitas e eventos",
-              ]}
-            />
-            <Plano
-              destaque={false}
-              nome="Ouro"
-              valor={120}
-              perks={[
-                "Tudo do Prata",
-                "Cartinha trimestral do seu afilhado",
-                "Agradecimento no mural",
-              ]}
-            />
-          </div>
+          <GridStagger>
+            <PlanoCardAnimated>
+              <Plano
+                destaque={false}
+                nome="Bronze"
+                valor={30}
+                perks={[
+                  "Atualizações periódicas",
+                  "Certificado de padrinho",
+                  "Entrada no grupo de novidades",
+                ]}
+              />
+            </PlanoCardAnimated>
+
+            <PlanoCardAnimated featured>
+              <Plano
+                destaque
+                nome="Prata"
+                valor={60}
+                perks={[
+                  "Tudo do Bronze",
+                  "Relatos mensais com fotos",
+                  "Prioridade em visitas e eventos",
+                ]}
+              />
+            </PlanoCardAnimated>
+
+            <PlanoCardAnimated>
+              <Plano
+                destaque={false}
+                nome="Ouro"
+                valor={120}
+                perks={[
+                  "Tudo do Prata",
+                  "Cartinha trimestral do seu afilhado",
+                  "Agradecimento no mural",
+                ]}
+              />
+            </PlanoCardAnimated>
+          </GridStagger>
         </section>
 
+        {/* === Como funciona (mesma UI, entrada suave) === */}
         <section className="mt-12">
           <h2 className="text-xl font-extrabold mb-3">Como funciona</h2>
           <div className="grid gap-4 md:grid-cols-4">
@@ -198,6 +218,7 @@ export default function PadrinhosPage() {
           </div>
         </section>
 
+        {/* === Mural com hover elástico === */}
         <section className="mt-12">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-xl font-extrabold">Mural de Padrinhos</h2>
@@ -209,7 +230,7 @@ export default function PadrinhosPage() {
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {PADRINHOS.map((p, i) => (
-              <div key={i} className="bg-white rounded-2xl p-4 shadow-card flex items-center gap-3">
+              <CardHover key={i}>
                 <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-brand-secondary/10 to-brand-secondary/30 text-brand-secondary font-bold ring-1 ring-black/5">
                   {p.nome
                     .split(" ")
@@ -224,27 +245,28 @@ export default function PadrinhosPage() {
                   </div>
                 </div>
                 <CheckCircle2 className="ml-auto h-5 w-5 text-emerald-600" aria-label="ativo" />
-              </div>
+              </CardHover>
             ))}
           </div>
         </section>
 
+        {/* === FAQ com entrada suave === */}
         <section className="mt-12">
           <h2 className="text-xl font-extrabold mb-3">Dúvidas frequentes</h2>
           <div className="space-y-3">
-            <Faq
+            <FaqAnimated
               q="Posso cancelar quando quiser?"
               a="Sim. O apadrinhamento é 100% voluntário e pode ser cancelado a qualquer momento."
             />
-            <Faq
+            <FaqAnimated
               q="Para onde vai a minha contribuição?"
               a="Cobre ração, vermífugos, vacinas, castrações, consultas veterinárias e manutenção dos lares temporários."
             />
-            <Faq
+            <FaqAnimated
               q="Receberei notícias do meu afilhado?"
               a="Sim! Enviamos relatos periódicos (texto, fotos e, quando possível, vídeos)."
             />
-            <Faq
+            <FaqAnimated
               q="Posso doar via Pix?"
               a="Pode sim. Na página “Como Ajudar” você encontra a chave Pix e instruções para recorrência."
             />
@@ -280,7 +302,17 @@ export default function PadrinhosPage() {
   );
 }
 
-function Kpi({ icon, label, value }: { icon: React.ReactNode; label: string; value: number | string }) {
+/* ===== componentes estáticos originais (inalterados) ===== */
+
+function Kpi({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number | string;
+}) {
   return (
     <div className="bg-white rounded-2xl p-5 shadow-card">
       <div className="flex items-center gap-2 text-neutral-700">
