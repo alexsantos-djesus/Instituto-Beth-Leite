@@ -1,8 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Container from "@/components/Container";
 import CloudinaryUploader from "@/components/CloudinaryUploader";
+
+// 👇 helper local
+const slugify = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 
 type Animal = {
   id: number;
@@ -27,6 +37,7 @@ type Animal = {
 
 export default function EditAnimal({ params }: { params: { id: string } }) {
   const id = params.id;
+  const router = useRouter();
   const [data, setData] = useState<Animal | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -48,6 +59,7 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
 
     const payload = {
       ...data,
+      slug: slugify(data.slug || data.nome), // 👈 força slug limpo
       idadeMeses: Number(data.idadeMeses || 0),
       raca: data.raca?.trim() || null,
       temperamento: data.temperamento?.trim() || null,
@@ -57,14 +69,21 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
       dataResgate: data.dataResgate ? new Date(data.dataResgate) : null,
     };
 
-    await fetch(`/api/admin/animals/${id}`, {
+    const res = await fetch(`/api/admin/animals/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
     setSaving(false);
-    alert("Salvo!");
+
+    if (!res.ok) {
+      alert("Não foi possível salvar. Tente novamente.");
+      return;
+    }
+
+    router.push("/admin/animals");
+    router.refresh();
   }
 
   if (!data) return null;
@@ -92,7 +111,8 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
               <input
                 className="w-full mt-1 border rounded-xl px-3 py-2"
                 value={data.slug}
-                onChange={(e) => updateField("slug", e.target.value)}
+                onChange={(e) => updateField("slug", slugify(e.target.value))} // 👈 sanitize on type
+                placeholder="ex.: lola-gata-srd"
               />
             </label>
 

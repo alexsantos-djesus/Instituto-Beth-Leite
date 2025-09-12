@@ -57,7 +57,7 @@ export default function NewAnimalPage() {
 
     const payload: any = {
       ...form,
-      slug: (canAutosetSlug ? slugify(form.nome) : form.slug).trim(),
+      slug: slugify(canAutosetSlug ? form.nome : form.slug),
       idadeMeses: Number(form.idadeMeses || 0),
       raca: form.raca.trim() || null,
       temperamento: form.temperamento.trim() || null,
@@ -113,6 +113,7 @@ export default function NewAnimalPage() {
 
       <form onSubmit={submit} className="bg-white rounded-2xl shadow-card p-6 space-y-5 max-w-3xl">
         <div className="grid sm:grid-cols-2 gap-4">
+          {/* Nome */}
           <label className="block">
             <span className="text-sm">Nome</span>
             <input
@@ -129,12 +130,13 @@ export default function NewAnimalPage() {
             />
           </label>
 
+          {/* Slug */}
           <label className="block">
             <span className="text-sm">Slug</span>
             <input
               className="w-full border rounded-xl px-3 py-2"
               value={form.slug}
-              onChange={(e) => onChange("slug", e.target.value)}
+              onChange={(e) => onChange("slug", slugify(e.target.value))} // sanitiza sempre
             />
           </label>
 

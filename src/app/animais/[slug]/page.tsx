@@ -352,9 +352,14 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
         </div>
 
         <div className="bg-white rounded-2xl p-6 shadow-card space-y-3">
-          <QRModal url={urlRelative}>
-            <button className="w-full inline-flex items-center justify-center gap-2 rounded-pill px-4 py-2 bg-white border border-neutral-200 hover:bg-neutral-50 active:scale-[0.99] transition">
-              <QrCode size={18} /> Ver QR Code
+          <QRModal
+            url={urlRelative}
+            nome={animal.nome}
+            especie={animal.especie as "GATO" | "CACHORRO"}
+            sexo={animal.sexo as "MACHO" | "FEMEA"}
+          >
+            <button className="w-full inline-flex items-center justify-center gap-2 rounded-pill px-4 py-2 bg-white border border-neutral-200 hover:bg-neutral-50">
+              Ver QR Code
             </button>
           </QRModal>
           <a

@@ -3,6 +3,23 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
+export const dynamic = "force-dynamic";
+
+const slugify = (s: string) =>
+  String(s || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+
+type FivFelv = "POSITIVO" | "NEGATIVO" | "NAO_TESTADO";
+const asFivFelv = (v: unknown): FivFelv | null => {
+  if (v == null) return null;
+  const s = String(v).toUpperCase();
+  return s === "POSITIVO" || s === "NEGATIVO" || s === "NAO_TESTADO" ? (s as FivFelv) : null;
+};
+
 export async function GET(_: Request, { params }: { params: { id: string } }) {
   const a = await prisma.animal.findUnique({
     where: { id: Number(params.id) },
@@ -16,24 +33,55 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   const id = Number(params.id);
   const body = await req.json().catch(() => ({}));
 
+  // Guardar slug anterior p/ revalidar página antiga se o slug mudar
+  const current = await prisma.animal.findUnique({
+    where: { id },
+    select: { slug: true, especie: true },
+  });
+  if (!current) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+  const oldSlug = current.slug;
+
   const {
-    photos: _ignorePhotos, // fotos são geridas na rota própria
+    photos: _ignorePhotos, // fotos têm rota própria
     dataResgate,
+    slug,
+    nome,
+    especie,
+    fivFelvStatus,
     ...rest
-  } = body ?? {};
+  } = (body ?? {}) as Record<string, unknown>;
+
+  // slug seguro (se veio slug ou nome; senão mantém o antigo)
+  const computedSafeSlug = slugify((slug as string) || (nome as string) || "") || oldSlug;
+
+  // normaliza FIV/FELV: só persiste se espécie for GATO, caso contrário força null
+  const nextFivFelv =
+    (typeof especie === "string" ? especie : current.especie) === "GATO"
+      ? asFivFelv(fivFelvStatus)
+      : null;
 
   const updated = await prisma.animal.update({
     where: { id },
     data: {
-      ...rest, // pode conter fivFelvStatus
-      dataResgate: dataResgate ? new Date(dataResgate) : null,
+      ...rest,
+      slug: computedSafeSlug,
+      // só seta se veio; caso não tenha sido enviado, não mexe:
+      ...(typeof especie === "string" ? { especie: especie as string } : {}),
+      ...(dataResgate !== undefined
+        ? { dataResgate: dataResgate ? new Date(String(dataResgate)) : null }
+        : {}),
+      ...(fivFelvStatus !== undefined ? { fivFelvStatus: nextFivFelv } : {}),
       atualizadoEm: new Date(),
     },
     select: { id: true, slug: true },
   });
 
+  // Revalidate: home, listagens e páginas por slug (antiga e nova, se mudou)
   revalidatePath("/admin/animals");
   revalidatePath("/animais");
+  if (oldSlug && oldSlug !== updated.slug) revalidatePath(`/animais/${oldSlug}`);
   revalidatePath(`/animais/${updated.slug}`);
   revalidatePath("/");
 
