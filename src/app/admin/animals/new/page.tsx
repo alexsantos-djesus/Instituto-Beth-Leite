@@ -34,7 +34,7 @@ export default function NewAnimalPage() {
     convivencia: "",
     saudeDetalhes: "",
     dataResgate: "",
-    fivFelvTested: null as null | boolean,
+    fivFelvStatus: null as null | "POSITIVO" | "NEGATIVO" | "NAO_TESTADO",
   });
 
   const [fotos, setFotos] = useState<Photo[]>([]);
@@ -65,7 +65,8 @@ export default function NewAnimalPage() {
       convivencia: form.convivencia.trim() || null,
       saudeDetalhes: form.saudeDetalhes.trim() || null,
       dataResgate: form.dataResgate ? new Date(form.dataResgate) : null,
-      fivFelvTested: form.especie === "GATO" ? form.fivFelvTested : null,
+      // só enviar para gatos, senão null
+      fivFelvStatus: form.especie === "GATO" ? form.fivFelvStatus : null,
       photos: fotos.map((p, i) => ({
         url: p.url,
         alt: p.alt || form.nome,
@@ -155,15 +156,15 @@ export default function NewAnimalPage() {
               <span className="text-sm">Testado FIV/FELV?</span>
               <select
                 className="w-full border rounded-xl px-3 py-2 mt-1"
-                value={form.fivFelvTested === null ? "" : form.fivFelvTested ? "SIM" : "NAO"}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  onChange("fivFelvTested", v === "" ? null : v === "SIM");
-                }}
+                value={form.fivFelvStatus ?? ""}
+                onChange={(e) =>
+                  onChange("fivFelvStatus", e.target.value === "" ? null : (e.target.value as any))
+                }
               >
                 <option value="">Selecione</option>
-                <option value="SIM">SIM</option>
-                <option value="NAO">NÃO</option>
+                <option value="NEGATIVO">Sim, negativo</option>
+                <option value="POSITIVO">Sim, positivo</option>
+                <option value="NAO_TESTADO">Não testado</option>
               </select>
             </label>
           )}

@@ -211,8 +211,15 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
 
   const showFivFelv =
     animal.especie === "GATO" &&
-    animal.fivFelvTested !== null &&
-    animal.fivFelvTested !== undefined;
+    animal.fivFelvStatus !== null &&
+    animal.fivFelvStatus !== undefined;
+
+  const fivFelvLabel =
+    animal.fivFelvStatus === "POSITIVO"
+      ? "Sim, positivo"
+      : animal.fivFelvStatus === "NEGATIVO"
+      ? "Sim, negativo"
+      : "Não testado";
 
   return (
     <div className="mt-12 md:mt-16 grid lg:grid-cols-3 gap-8">
@@ -220,7 +227,8 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
         <div className="bg-white rounded-2xl p-6 shadow-card">
           <h2 className="font-extrabold text-xl mb-2">Sobre mim</h2>
           <p className="text-neutral-700">
-            {animal.descricao || "Sou um(a) pet muito especial aguardando um lar amoroso. Pergunte mais sobre mim!"}
+            {animal.descricao ||
+              "Sou um(a) pet muito especial aguardando um lar amoroso. Pergunte mais sobre mim!"}
           </p>
         </div>
 
@@ -228,9 +236,7 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
         {hasRescue && (
           <div className="bg-white rounded-2xl p-6 shadow-card">
             <h3 className="font-bold text-lg mb-2">História do resgate</h3>
-            <p className="text-neutral-700 whitespace-pre-line">
-              {animal.historiaResgate}
-            </p>
+            <p className="text-neutral-700 whitespace-pre-line">{animal.historiaResgate}</p>
             {animal.temperamento ? (
               <p className="mt-3 text-sm text-neutral-600">
                 <span className="font-semibold">Temperamento:</span> {animal.temperamento}
@@ -257,13 +263,17 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
               <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2">
                 <Syringe className="h-4 w-4 text-neutral-700" />
                 <span className="text-sm">
-                  Vacinas: <span className="font-semibold">{animal.vacinado ? "em dia" : "a atualizar"}</span>
+                  Vacinas:{" "}
+                  <span className="font-semibold">
+                    {animal.vacinado ? "em dia" : "a atualizar"}
+                  </span>
                 </span>
               </div>
               <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2">
                 <Scissors className="h-4 w-4 text-neutral-700" />
                 <span className="text-sm">
-                  Castração: <span className="font-semibold">{animal.castrado ? "sim" : "não"}</span>
+                  Castração:{" "}
+                  <span className="font-semibold">{animal.castrado ? "sim" : "não"}</span>
                 </span>
               </div>
             </div>
@@ -280,11 +290,21 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
             <h3 className="font-bold text-lg mb-4">Galeria de momentos</h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {fotos.map((p: any) => (
-                <figure key={p.id} className="rounded-xl overflow-hidden bg-neutral-100 ring-1 ring-neutral-200/60">
+                <figure
+                  key={p.id}
+                  className="rounded-xl overflow-hidden bg-neutral-100 ring-1 ring-neutral-200/60"
+                >
                   <div className="relative aspect-[4/3]">
-                    <Image src={p.url} alt={p.alt} fill className="object-cover transition-transform duration-300 hover:scale-[1.03]" />
+                    <Image
+                      src={p.url}
+                      alt={p.alt}
+                      fill
+                      className="object-cover transition-transform duration-300 hover:scale-[1.03]"
+                    />
                   </div>
-                  {p.alt ? <figcaption className="p-2 text-sm text-neutral-700">{p.alt}</figcaption> : null}
+                  {p.alt ? (
+                    <figcaption className="p-2 text-sm text-neutral-700">{p.alt}</figcaption>
+                  ) : null}
                 </figure>
               ))}
             </div>
@@ -297,25 +317,37 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
           <h3 className="font-bold mb-3">Ficha técnica</h3>
           <dl className="grid grid-cols-2 gap-y-2 text-sm">
             <dt className="text-neutral-600">Espécie</dt>
-            <dd className="flex items-center gap-1">{especieIcon}{animal.especie}</dd>
+            <dd className="flex items-center gap-1">
+              {especieIcon}
+              {animal.especie}
+            </dd>
             <dt className="text-neutral-600">Sexo</dt>
             <dd>{animal.sexo}</dd>
             <dt className="text-neutral-600">Porte</dt>
             <dd>{animal.porte}</dd>
             <dt className="text-neutral-600">Idade</dt>
             <dd>{idadeEmTexto(animal.idadeMeses)}</dd>
-            {animal.raca ? (<><dt className="text-neutral-600">Raça</dt><dd>{animal.raca}</dd></>) : null}
+            {animal.raca ? (
+              <>
+                <dt className="text-neutral-600">Raça</dt>
+                <dd>{animal.raca}</dd>
+              </>
+            ) : null}
 
             {/* === NOVO: FIV/FELV apenas quando for gato e tiver valor === */}
             {showFivFelv && (
               <>
                 <dt className="text-neutral-600">Testado FIV/FELV</dt>
-                <dd>{animal.fivFelvTested ? "SIM" : "NÃO"}</dd>
+                <dd>{fivFelvLabel}</dd>
               </>
             )}
           </dl>
           <div className="mt-3 flex flex-wrap gap-2">
-            {chip(<><PawPrint className="h-4 w-4" /> Pronto para amar</>)}
+            {chip(
+              <>
+                <PawPrint className="h-4 w-4" /> Pronto para amar
+              </>
+            )}
           </div>
         </div>
 
@@ -339,7 +371,10 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
           >
             <HeartHandshake size={18} /> Apadrinhar / Doar
           </Link>
-          <Link className="block text-center text-brand-secondary underline" href={{ pathname: "/adote", query: { animal: animal.id } }}>
+          <Link
+            className="block text-center text-brand-secondary underline"
+            href={{ pathname: "/adote", query: { animal: animal.id } }}
+          >
             Quero adotar {animal.nome}
           </Link>
         </div>

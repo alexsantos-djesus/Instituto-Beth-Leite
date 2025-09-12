@@ -1,3 +1,6 @@
+﻿-- CreateEnum
+CREATE TYPE "FivFelvStatus" AS ENUM ('POSITIVO', 'NEGATIVO', 'NAO_TESTADO');
+
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('ADMIN', 'EDITOR');
 
@@ -24,6 +27,10 @@ CREATE TABLE "Animal" (
     "dataResgate" TIMESTAMP(3),
     "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "atualizadoEm" TIMESTAMP(3) NOT NULL,
+    "adotado" BOOLEAN NOT NULL DEFAULT false,
+    "adotadoEm" TIMESTAMP(3),
+    "fivFelvStatus" "FivFelvStatus",
+    "oculto" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Animal_pkey" PRIMARY KEY ("id")
 );
@@ -53,6 +60,11 @@ CREATE TABLE "AdoptionRequest" (
     "mensagem" TEXT NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'NOVO',
     "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "perfil" JSONB,
+    "bairro" TEXT,
+    "cep" TEXT,
+    "endereco" TEXT,
+    "numero" TEXT,
 
     CONSTRAINT "AdoptionRequest_pkey" PRIMARY KEY ("id")
 );
@@ -137,6 +149,9 @@ CREATE TABLE "CollectionPoint" (
 CREATE UNIQUE INDEX "Animal_slug_key" ON "Animal"("slug");
 
 -- CreateIndex
+CREATE INDEX "Animal_adotado_adotadoEm_idx" ON "Animal"("adotado", "adotadoEm");
+
+-- CreateIndex
 CREATE INDEX "Photo_animalId_sortOrder_idx" ON "Photo"("animalId", "sortOrder");
 
 -- CreateIndex
@@ -165,3 +180,4 @@ ALTER TABLE "AdoptionRequest" ADD CONSTRAINT "AdoptionRequest_animalId_fkey" FOR
 
 -- AddForeignKey
 ALTER TABLE "CollectionPoint" ADD CONSTRAINT "CollectionPoint_settingsId_fkey" FOREIGN KEY ("settingsId") REFERENCES "DonationSettings"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+

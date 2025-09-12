@@ -3,93 +3,86 @@ generator client {
 }
 
 datasource db {
-  provider   = "postgresql"
-  url        = env("DATABASE_URL")
-  directUrl  = env("DIRECT_URL")
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  directUrl    = env("DIRECT_URL")
   relationMode = "foreignKeys"
 }
 
+enum FivFelvStatus {
+  POSITIVO
+  NEGATIVO
+  NAO_TESTADO
+}
+
 model Animal {
-  id           Int      @id @default(autoincrement())
-  slug         String   @unique
-  nome         String
-
-  especie      String
-  sexo         String
-  porte        String
-
-  idadeMeses   Int
-  vacinado     Boolean  @default(false)
-  castrado     Boolean  @default(false)
-  raca         String?
-  temperamento String?
-  descricao    String
-  adotado   Boolean  @default(false)
-  adotadoEm DateTime?
+  id              Int               @id @default(autoincrement())
+  slug            String            @unique
+  nome            String
+  especie         String
+  sexo            String
+  porte           String
+  idadeMeses      Int
+  vacinado        Boolean           @default(false)
+  castrado        Boolean           @default(false)
+  raca            String?
+  temperamento    String?
+  descricao       String
   historiaResgate String?
   convivencia     String?
   saudeDetalhes   String?
   dataResgate     DateTime?
-  fivFelvTested    Boolean?
-   oculto         Boolean   @default(false)
+  criadoEm        DateTime          @default(now())
+  atualizadoEm    DateTime          @updatedAt
+  adotado         Boolean           @default(false)
+  adotadoEm       DateTime?
+  fivFelvStatus    FivFelvStatus?
+  oculto          Boolean           @default(false)
+  requests        AdoptionRequest[]
+  photos          Photo[]
 
-  @@index      ([adotado, adotadoEm])
-  photos       Photo[]
-  criadoEm     DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
-
-  requests     AdoptionRequest[]
+  @@index([adotado, adotadoEm])
 }
 
 model Photo {
-  id         Int     @id @default(autoincrement())
-  animal     Animal  @relation(fields: [animalId], references: [id], onDelete: Cascade)
-  animalId   Int
-  url        String
-  alt        String
-  isCover    Boolean @default(false)
-  sortOrder  Int     @default(0)
-  createdAt  DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  animalId  Int
+  url       String
+  alt       String
+  isCover   Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  animal    Animal   @relation(fields: [animalId], references: [id], onDelete: Cascade)
 
   @@index([animalId, sortOrder])
 }
 
 model AdoptionRequest {
-  id        Int      @id @default(autoincrement())
-  animal    Animal   @relation(fields: [animalId], references: [id], onDelete: Cascade)
-  animalId  Int
-
-  nome      String
-  email     String
-  telefone  String
-
-  cidade    String
-  uf        String
-
-  // NOVOS
-  cep       String?
-  endereco  String?
-  numero    String?
-  bairro    String?
-
-  mensagem  String
-  status    String   @default("NOVO")
-  criadoEm  DateTime @default(now())
-  perfil    Json?
+  id       Int      @id @default(autoincrement())
+  animalId Int
+  nome     String
+  email    String
+  telefone String
+  cidade   String
+  uf       String
+  mensagem String
+  status   String   @default("NOVO")
+  criadoEm DateTime @default(now())
+  perfil   Json?
+  bairro   String?
+  cep      String?
+  endereco String?
+  numero   String?
+  animal   Animal   @relation(fields: [animalId], references: [id], onDelete: Cascade)
 
   @@index([status, criadoEm])
-}
-
-enum Role {
-  ADMIN
-  EDITOR
 }
 
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String?
-  password  String   // hash (bcrypt)
+  password  String
   role      Role     @default(EDITOR)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -109,9 +102,9 @@ model Partner {
 }
 
 model Event {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   title     String
-  slug      String   @unique
+  slug      String    @unique
   startsAt  DateTime
   endsAt    DateTime?
   location  String?
@@ -119,11 +112,44 @@ model Event {
   coverUrl  String?
   excerpt   String?
   content   String?
-  published Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  published Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([published, startsAt])
+}
+
+model DonationSettings {
+  id               String            @id @default("singleton")
+  pixKey           String?
+  pixKeyType       PixKeyType?
+  bankName         String?
+  bankAgency       String?
+  bankAccount      String?
+  bankHolder       String?
+  recurringLink    String?
+  itemsWanted      String?
+  updatedAt        DateTime          @updatedAt
+  collectionPoints CollectionPoint[]
+}
+
+model CollectionPoint {
+  id         String           @id @default(cuid())
+  settingsId String
+  name       String
+  address    String
+  hours      String?
+  phone      String?
+  active     Boolean          @default(true)
+  order      Int              @default(0)
+  settings   DonationSettings @relation(fields: [settingsId], references: [id], onDelete: Cascade)
+
+  @@index([settingsId, active, order])
+}
+
+enum Role {
+  ADMIN
+  EDITOR
 }
 
 enum PixKeyType {
@@ -132,33 +158,4 @@ enum PixKeyType {
   EMAIL
   TELEFONE
   ALEATORIA
-}
-
-model DonationSettings {
-  id            String     @id @default("singleton")
-  pixKey        String?
-  pixKeyType    PixKeyType?
-  bankName      String?
-  bankAgency    String?
-  bankAccount   String?
-  bankHolder    String?
-  recurringLink String?
-  itemsWanted   String?
-  updatedAt     DateTime   @updatedAt
-
-  collectionPoints CollectionPoint[]
-}
-
-model CollectionPoint {
-  id        String   @id @default(cuid())
-  settings  DonationSettings @relation(fields: [settingsId], references: [id], onDelete: Cascade)
-  settingsId String
-  name      String
-  address   String
-  hours     String?
-  phone     String?
-  active    Boolean  @default(true)
-  order     Int      @default(0)
-
-  @@index([settingsId, active, order])
 }
