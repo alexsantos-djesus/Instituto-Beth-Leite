@@ -22,7 +22,7 @@ type Animal = {
   saudeDetalhes?: string | null;
   dataResgate?: string | null;
   photos: { id: number; url: string; alt: string; isCover: boolean }[];
-  fivFelvTested?: boolean | null;
+  fivFelvStatus?: "POSITIVO" | "NEGATIVO" | "NAO_TESTADO" | null;
 };
 
 export default function EditAnimal({ params }: { params: { id: string } }) {
@@ -114,15 +114,18 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
                 <span className="text-sm">Testado FIV/FELV?</span>
                 <select
                   className="w-full mt-1 border rounded-xl px-3 py-2"
-                  value={data.fivFelvTested == null ? "" : data.fivFelvTested ? "SIM" : "NAO"}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    updateField("fivFelvTested", v === "" ? null : v === "SIM");
-                  }}
+                  value={data.fivFelvStatus ?? ""}
+                  onChange={(e) =>
+                    updateField(
+                      "fivFelvStatus",
+                      e.target.value === "" ? null : (e.target.value as any)
+                    )
+                  }
                 >
                   <option value="">Selecione</option>
-                  <option value="SIM">SIM</option>
-                  <option value="NAO">NÃO</option>
+                  <option value="NEGATIVO">Sim, negativo</option>
+                  <option value="POSITIVO">Sim, positivo</option>
+                  <option value="NAO_TESTADO">Não testado</option>
                 </select>
               </label>
             )}

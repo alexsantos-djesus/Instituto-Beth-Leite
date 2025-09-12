@@ -25,7 +25,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   const updated = await prisma.animal.update({
     where: { id },
     data: {
-      ...rest,
+      ...rest, // pode conter fivFelvStatus
       dataResgate: dataResgate ? new Date(dataResgate) : null,
       atualizadoEm: new Date(),
     },

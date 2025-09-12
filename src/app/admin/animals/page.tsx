@@ -6,8 +6,6 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { PawPrint } from "lucide-react";
 
-// …imports iguais
-
 export const revalidate = 0;
 
 async function toggleAdotado(formData: FormData) {
@@ -23,7 +21,7 @@ async function toggleAdotado(formData: FormData) {
     where: { id },
     data: adotado
       ? { adotado: false, adotadoEm: null, atualizadoEm: new Date() }
-      : { adotado: true,  adotadoEm: new Date(), atualizadoEm: new Date() },
+      : { adotado: true, adotadoEm: new Date(), atualizadoEm: new Date() },
   });
 
   revalidatePath("/admin/animals");
@@ -44,7 +42,7 @@ async function toggleOculto(formData: FormData) {
     where: { id },
     data: oculto
       ? { oculto: false, atualizadoEm: new Date() }
-      : { oculto: true,  atualizadoEm: new Date() },
+      : { oculto: true, atualizadoEm: new Date() },
   });
 
   revalidatePath("/admin/animals");
@@ -66,20 +64,43 @@ export default async function AnimalsAdminList() {
 
   return (
     <Container className="py-8">
-      {/* …topbar igual… */}
+      {/* ===== CABEÇALHO COM BOTÃO ===== */}
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-extrabold">Animais</h1>
+        <Link
+          href="/admin/animals/new"
+          className="rounded-full bg-neutral-900 text-white px-4 py-2 hover:bg-neutral-800"
+        >
+          + Novo animal
+        </Link>
+      </div>
+
       {animals.length === 0 ? (
         <div className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-neutral-200/60">
-          Nenhum animal cadastrado ainda.
+          <p>Nenhum animal cadastrado ainda.</p>
+          <div className="mt-4">
+            <Link
+              href="/admin/animals/new"
+              className="inline-flex items-center rounded-full bg-neutral-900 text-white px-4 py-2 hover:bg-neutral-800"
+            >
+              Cadastar primeiro animal
+            </Link>
+          </div>
         </div>
       ) : (
         <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {animals.map((a) => {
             const cover = a.photos[0];
             return (
-              <li key={a.id} className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-neutral-200/60">
+              <li
+                key={a.id}
+                className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-neutral-200/60"
+              >
                 <div className="flex gap-3">
                   <div className="relative h-20 w-28 rounded-lg overflow-hidden bg-neutral-100 shrink-0">
-                    {cover && <Image src={cover.url} alt={cover.alt} fill className="object-cover" />}
+                    {cover && (
+                      <Image src={cover.url} alt={cover.alt} fill className="object-cover" />
+                    )}
                   </div>
 
                   <div className="min-w-0">
@@ -110,7 +131,10 @@ export default async function AnimalsAdminList() {
                   </div>
 
                   <div className="flex gap-1">
-                    <Link href={`/admin/animals/${a.id}`} className="rounded-full px-3 py-1.5 text-sm bg-neutral-100 hover:bg-neutral-200">
+                    <Link
+                      href={`/admin/animals/${a.id}`}
+                      className="rounded-full px-3 py-1.5 text-sm bg-neutral-100 hover:bg-neutral-200"
+                    >
                       Editar
                     </Link>
 
@@ -118,15 +142,18 @@ export default async function AnimalsAdminList() {
                       <input type="hidden" name="id" value={a.id} />
                       <input type="hidden" name="adotado" value={String(a.adotado)} />
                       <button
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs ring-1 transition ${
-                          a.adotado
-                            ? "bg-emerald-600 text-white ring-emerald-600 hover:bg-emerald-700"
-                            : "bg-white text-neutral-700 ring-neutral-200 hover:bg-neutral-100"
-                        }`}
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs ring-1 transition
+                          ${
+                            a.adotado
+                              ? "bg-emerald-600 text-white ring-emerald-600 hover:bg-emerald-700"
+                              : "bg-white text-neutral-700 ring-neutral-200 hover:bg-neutral-100"
+                          }`}
                         title={a.adotado ? "Desfazer adotado" : "Marcar como adotado"}
                       >
                         <PawPrint size={14} />
-                        <span className="hidden sm:inline">{a.adotado ? "Adotado ✓" : "Marcar adotado"}</span>
+                        <span className="hidden sm:inline">
+                          {a.adotado ? "Adotado ✓" : "Marcar adotado"}
+                        </span>
                       </button>
                     </form>
 
@@ -134,11 +161,12 @@ export default async function AnimalsAdminList() {
                       <input type="hidden" name="id" value={a.id} />
                       <input type="hidden" name="oculto" value={String(a.oculto)} />
                       <button
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs ring-1 transition ${
-                          a.oculto
-                            ? "bg-amber-600 text-white ring-amber-600 hover:bg-amber-700"
-                            : "bg-white text-neutral-700 ring-neutral-200 hover:bg-neutral-100"
-                        }`}
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs ring-1 transition
+                          ${
+                            a.oculto
+                              ? "bg-amber-600 text-white ring-amber-600 hover:bg-amber-700"
+                              : "bg-white text-neutral-700 ring-neutral-200 hover:bg-neutral-100"
+                          }`}
                         title={a.oculto ? "Tornar visível" : "Ocultar da lista pública"}
                       >
                         <span className="hidden sm:inline">{a.oculto ? "Mostrar" : "Ocultar"}</span>
@@ -151,6 +179,14 @@ export default async function AnimalsAdminList() {
           })}
         </ul>
       )}
+
+      {/* (Opcional) Botão flutuante para criar novo rapidamente */}
+      <Link
+        href="/admin/animals/new"
+        className="fixed bottom-6 right-6 rounded-full shadow-lg bg-neutral-900 text-white px-5 py-3 hover:bg-neutral-800"
+      >
+        + Novo animal
+      </Link>
     </Container>
   );
 }
