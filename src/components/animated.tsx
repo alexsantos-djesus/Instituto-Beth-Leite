@@ -191,7 +191,7 @@ export function GridStagger({ children, ...rest }: PropsWithChildren<MotionProps
 // Card de plano com hover; intercepta 'featured' para não ir ao DOM
 export function PlanoCardAnimated({
   children,
-  featured, // eslint-disable-line @typescript-eslint/no-unused-vars
+  featured: _featured,
   className,
   ...rest
 }: PropsWithChildren<{ featured?: boolean } & MotionProps & { className?: string }>) {
