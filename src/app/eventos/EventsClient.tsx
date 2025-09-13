@@ -1,9 +1,10 @@
+// src/app/eventos/EventsClient.tsx
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 
 /* -------- tipos -------- */
 type Event = {
@@ -20,7 +21,7 @@ type Event = {
   destaque?: boolean;
 };
 
-/* -------- helpers robustos -------- */
+/* -------- helpers -------- */
 function parseISO(iso?: string | null): Date | null {
   if (!iso) return null;
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
@@ -46,13 +47,18 @@ function fmtData(iso: string) {
   return new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(d);
 }
 
-/* -------- animação -------- */
-const fadeUp = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0 } };
-const list = {
+/* -------- animação (tipadas) -------- */
+const fadeUpV = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0 },
+} satisfies Variants;
+
+const listV = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.12 } },
-};
-const item = {
+} satisfies Variants;
+
+const itemV = {
   hidden: { opacity: 0, y: 16, scale: 0.98 },
   show: {
     opacity: 1,
@@ -60,7 +66,7 @@ const item = {
     scale: 1,
     transition: { type: "spring", stiffness: 420, damping: 28 },
   },
-};
+} satisfies Variants;
 
 /* -------- UI -------- */
 function Badge({ children }: { children: React.ReactNode }) {
@@ -77,7 +83,7 @@ function EventCard({ e }: { e: Event }) {
 
   return (
     <motion.article
-      variants={item}
+      variants={itemV}
       whileHover={{ y: -2, scale: 1.01 }}
       transition={{ type: "spring", stiffness: 260, damping: 18 }}
       className="group rounded-2xl bg-white ring-1 ring-teal-100 overflow-hidden shadow-sm hover:shadow-md"
@@ -157,7 +163,7 @@ function groupAndSort(evts: Event[]) {
 function Empty({ children }: { children: React.ReactNode }) {
   return (
     <motion.div
-      variants={fadeUp}
+      variants={fadeUpV}
       initial="hidden"
       animate="show"
       className="col-span-full text-center py-10 rounded-2xl bg-white ring-1 ring-teal-100"
@@ -170,7 +176,7 @@ function Empty({ children }: { children: React.ReactNode }) {
 export default function EventsClient({ initialEvents }: { initialEvents: Event[] }) {
   const [tab, setTab] = useState<"proximos" | "passados" | "todos">("proximos");
   const groups = useMemo(() => groupAndSort(initialEvents), [initialEvents]);
-  const list =
+  const eventsList =
     tab === "proximos"
       ? groups.proximos
       : tab === "passados"
@@ -204,15 +210,15 @@ export default function EventsClient({ initialEvents }: { initialEvents: Event[]
       </motion.div>
 
       <motion.div
-        variants={list}
+        variants={listV}
         initial="hidden"
         animate="show"
         className="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
       >
-        {list.length === 0 ? (
+        {eventsList.length === 0 ? (
           <Empty>Nenhum evento nesta aba por enquanto. 🐾</Empty>
         ) : (
-          list.map((e) => <EventCard key={e.id} e={e} />)
+          eventsList.map((e) => <EventCard key={e.id} e={e} />)
         )}
       </motion.div>
     </section>

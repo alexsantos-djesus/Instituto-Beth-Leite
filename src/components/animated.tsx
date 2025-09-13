@@ -1,33 +1,47 @@
 // src/components/animated.tsx
 "use client";
 
-import { motion, type MotionProps } from "framer-motion";
-import type { PropsWithChildren, ReactNode, HTMLAttributes } from "react";
+import { motion, type MotionProps, type Variants } from "framer-motion";
+import type { PropsWithChildren, ReactNode, HTMLAttributes, ComponentProps } from "react";
 
 /* =========================
- * Variants
+ * Variants (tipados)
  * ========================= */
-export const fadeUp = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0 } };
+export const fadeUp = {
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0 },
+} satisfies Variants;
 
 export const list = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.15 } },
-};
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.15 },
+  },
+} satisfies Variants;
 
 export const item = {
   hidden: { opacity: 0, y: 22, scale: 0.97 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 380, damping: 22 } },
-};
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: "spring", stiffness: 380, damping: 22 },
+  },
+} satisfies Variants;
 
 /* =========================
  * Helpers simples
  * ========================= */
+
+type MotionDivProps = ComponentProps<typeof motion.div>;
+
 export function FadeIn({
   children,
   delay = 0,
   y = 10,
   ...rest
-}: PropsWithChildren<{ delay?: number; y?: number } & MotionProps>) {
+}: PropsWithChildren<{ delay?: number; y?: number } & MotionDivProps>) {
   return (
     <motion.div
       initial={{ opacity: 0, y }}
@@ -45,7 +59,7 @@ export function GrowIn({
   children,
   delay = 0,
   ...rest
-}: PropsWithChildren<{ delay?: number } & MotionProps>) {
+}: PropsWithChildren<{ delay?: number } & MotionDivProps>) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.98 }}
@@ -81,21 +95,17 @@ export function Stagger({
  * Wrappers/Blocos prontos
  * ========================= */
 
-// Hero
-export function AnimatedHero({ children, ...rest }: PropsWithChildren<MotionProps>) {
+export function AnimatedHero(props: ComponentProps<typeof motion.section>) {
   return (
     <motion.section
       initial={{ opacity: 0, y: -30, scale: 0.985 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.55, ease: "easeOut" }}
-      {...rest}
-    >
-      {children}
-    </motion.section>
+      {...props}
+    />
   );
 }
 
-// KPI pronto (casa com o uso na página)
 export function KpiAnimated({
   icon,
   label,
@@ -127,7 +137,6 @@ export function KpiAnimated({
   );
 }
 
-// Progress bar (aceita percent OU current/goal)
 export function ProgressAnimated({
   percent,
   current,
@@ -172,7 +181,6 @@ export function ProgressAnimated({
   );
 }
 
-// Stagger container
 export function GridStagger({ children, ...rest }: PropsWithChildren<MotionProps>) {
   return (
     <motion.div
@@ -188,13 +196,12 @@ export function GridStagger({ children, ...rest }: PropsWithChildren<MotionProps
   );
 }
 
-// Card de plano com hover; intercepta 'featured' para não ir ao DOM
 export function PlanoCardAnimated({
   children,
   featured: _featured,
   className,
   ...rest
-}: PropsWithChildren<{ featured?: boolean } & MotionProps & { className?: string }>) {
+}: PropsWithChildren<{ featured?: boolean } & MotionDivProps>) {
   return (
     <motion.div
       variants={item}
@@ -208,7 +215,6 @@ export function PlanoCardAnimated({
   );
 }
 
-// FAQ pronto (q/a) – casa com o uso na página
 export function FaqAnimated({ q, a }: { q: string; a: string }) {
   return (
     <motion.details
@@ -235,8 +241,7 @@ export function FaqAnimated({ q, a }: { q: string; a: string }) {
   );
 }
 
-// Wrapper genérico para hovers de cards
-export function CardHover({ children, ...rest }: PropsWithChildren<MotionProps>) {
+export function CardHover({ children, ...rest }: PropsWithChildren<MotionDivProps>) {
   return (
     <motion.div
       whileHover={{ scale: 1.03, y: -2 }}
