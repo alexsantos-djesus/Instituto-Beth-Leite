@@ -63,7 +63,7 @@ e ajuste os nomes dos arquivos abaixo se necessário.
       <img src="./public/screenshots/admin.png" alt="Painel Admin" width="95%" />
     </td>
     <td align="center" width="50%">
-      <strong>Como Ajudar / Padrinhos</strong><br/>
+      <strong>Como Ajudar</strong><br/>
       <img src="./public/screenshots/como-ajudar.png" alt="Como Ajudar" width="95%" />
     </td>
   </tr>
