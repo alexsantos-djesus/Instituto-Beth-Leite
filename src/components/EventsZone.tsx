@@ -22,7 +22,7 @@ export default async function EventsZone() {
   const eventos = await prisma.event.findMany({
     where: { published: true, startsAt: { gte: hoje } },
     orderBy: { startsAt: "asc" },
-    take: 3,
+    take: 4,
     select: {
       id: true,
       title: true,

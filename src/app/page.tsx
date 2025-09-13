@@ -9,7 +9,7 @@ export default async function HomePage() {
   const destaques = await prisma.animal.findMany({
     include: { photos: true },
     orderBy: { criadoEm: "desc" },
-    take: 3,
+    take: 4,
   });
 
   return (
