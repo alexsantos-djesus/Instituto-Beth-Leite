@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Container from "@/components/Container";
 import { Mail, Phone, RefreshCw, Search, User2, PawPrint, MapPin, X, Check } from "lucide-react";
 
-/* ---------------- helpers ---------------- */
 const onlyDigits = (s: string) => String(s || "").replace(/\D/g, "");
 function formatPhoneBR(digits: string) {
   const d = onlyDigits(digits).slice(-11);
@@ -30,13 +29,12 @@ function timeAgo(iso: string) {
   return `${dd} d`;
 }
 
-/* ---------------- types ---------------- */
 type Req = {
   id: number;
   status: "NOVO" | "CONTATADO" | "NAO_ELEGIVEL";
   nome: string;
   email: string;
-  telefone: string; // apenas dígitos
+  telefone: string;
   cep?: string | null;
   endereco?: string | null;
   numero?: string | null;
@@ -50,7 +48,6 @@ type Req = {
 };
 type StatusKey = Req["status"];
 
-/* ---------------- status visuals ---------------- */
 const statusLabel: Record<StatusKey, string> = {
   NOVO: "novo",
   CONTATADO: "contatado",
@@ -72,7 +69,6 @@ function StatusBadge({ s }: { s: StatusKey }) {
   );
 }
 
-/* ---------------- label helpers p/ perfil ---------------- */
 const labelMap: Record<string, string> = {
   trabalhaFora: "Você trabalha fora?",
   tempoAusente: "Tempo fora de casa",
@@ -114,7 +110,6 @@ function fmtVal(key: string, v: any) {
   return String(v ?? "");
 }
 
-/* ---------------- page ---------------- */
 export default function AdminSolicitacoes() {
   const [data, setData] = useState<Req[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -145,7 +140,6 @@ export default function AdminSolicitacoes() {
     }).catch(() => load());
   }
 
-  // Evita scroll do body quando o modal está aberto
   useEffect(() => {
     if (openReq) document.body.style.overflow = "hidden";
     return () => {
@@ -337,7 +331,6 @@ export default function AdminSolicitacoes() {
         </div>
       )}
 
-      {/* --------- Modal de detalhes (com scroll) --------- */}
       {openReq && (
         <div
           className="fixed inset-0 z-[60]"
@@ -345,16 +338,13 @@ export default function AdminSolicitacoes() {
           aria-modal="true"
           onClick={() => setOpenReq(null)}
         >
-          {/* backdrop */}
           <div className="absolute inset-0 bg-black/40" />
 
-          {/* card wrapper */}
           <div
             className="absolute left-1/2 top-6 -translate-x-1/2 w-[min(100vw,900px)] px-4 md:px-0"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-white rounded-2xl shadow-2xl ring-1 ring-black/10 overflow-hidden flex flex-col max-h-[86vh]">
-              {/* Header fixo */}
               <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4 border-b bg-white/95 backdrop-blur">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -395,11 +385,9 @@ export default function AdminSolicitacoes() {
                 </div>
               </div>
 
-              {/* Conteúdo rolável */}
               <div className="px-5">
                 <div className="overflow-y-auto max-h-[74vh] py-5 pr-1">
                   <div className="grid md:grid-cols-2 gap-6">
-                    {/* Contato */}
                     <section>
                       <h3 className="font-semibold text-neutral-800 mb-3">Contato</h3>
                       <div className="space-y-2 text-sm">
@@ -418,7 +406,6 @@ export default function AdminSolicitacoes() {
                       </div>
                     </section>
 
-                    {/* Endereço */}
                     <section>
                       <h3 className="font-semibold text-neutral-800 mb-3">Endereço</h3>
                       <div className="space-y-1 text-sm">
@@ -451,7 +438,6 @@ export default function AdminSolicitacoes() {
                       </div>
                     </section>
 
-                    {/* Mensagem */}
                     {openReq.mensagem ? (
                       <section className="md:col-span-2">
                         <h3 className="font-semibold text-neutral-800 mb-3">Mensagem</h3>
@@ -461,7 +447,6 @@ export default function AdminSolicitacoes() {
                       </section>
                     ) : null}
 
-                    {/* Perfil */}
                     <section className="md:col-span-2">
                       <h3 className="font-semibold text-neutral-800 mb-3">Seu perfil</h3>
                       {openReq.perfil ? (
@@ -488,7 +473,6 @@ export default function AdminSolicitacoes() {
                   </div>
                 </div>
               </div>
-              {/* /conteúdo rolável */}
             </div>
           </div>
         </div>

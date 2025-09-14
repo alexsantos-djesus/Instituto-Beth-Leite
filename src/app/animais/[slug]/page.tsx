@@ -36,7 +36,6 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
   });
   if (!animal) notFound();
 
-  // não mostrar página pública de animal adotado
   if (animal.oculto || animal.adotado) notFound();
 
   const fotos = animal.photos ?? [];
@@ -203,7 +202,6 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
 }
 
 function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: any) {
-  // === NOVO: flags para exibição condicional ===
   const hasRescue =
     Boolean(animal.historiaResgate) &&
     typeof animal.historiaResgate === "string" &&
@@ -232,7 +230,6 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
           </p>
         </div>
 
-        {/* === NOVO: mostrar História do resgate somente quando houver texto === */}
         {hasRescue && (
           <div className="bg-white rounded-2xl p-6 shadow-card">
             <h3 className="font-bold text-lg mb-2">História do resgate</h3>
@@ -334,7 +331,6 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
               </>
             ) : null}
 
-            {/* === NOVO: FIV/FELV apenas quando for gato e tiver valor === */}
             {showFivFelv && (
               <>
                 <dt className="text-neutral-600">Testado FIV/FELV</dt>

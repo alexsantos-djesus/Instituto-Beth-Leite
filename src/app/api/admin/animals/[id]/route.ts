@@ -1,4 +1,3 @@
-// src/app/api/admin/animals/[id]/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
@@ -33,7 +32,6 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   const id = Number(params.id);
   const body = await req.json().catch(() => ({}));
 
-  // Guardar slug anterior p/ revalidar página antiga se o slug mudar
   const current = await prisma.animal.findUnique({
     where: { id },
     select: { slug: true, especie: true },
@@ -44,7 +42,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   const oldSlug = current.slug;
 
   const {
-    photos: _ignorePhotos, // fotos têm rota própria
+    photos: _ignorePhotos,
     dataResgate,
     slug,
     nome,
@@ -53,10 +51,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     ...rest
   } = (body ?? {}) as Record<string, unknown>;
 
-  // slug seguro (se veio slug ou nome; senão mantém o antigo)
   const computedSafeSlug = slugify((slug as string) || (nome as string) || "") || oldSlug;
 
-  // normaliza FIV/FELV: só persiste se espécie for GATO, caso contrário força null
   const nextFivFelv =
     (typeof especie === "string" ? especie : current.especie) === "GATO"
       ? asFivFelv(fivFelvStatus)
@@ -67,7 +63,6 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     data: {
       ...rest,
       slug: computedSafeSlug,
-      // só seta se veio; caso não tenha sido enviado, não mexe:
       ...(typeof especie === "string" ? { especie: especie as string } : {}),
       ...(dataResgate !== undefined
         ? { dataResgate: dataResgate ? new Date(String(dataResgate)) : null }
@@ -78,7 +73,6 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     select: { id: true, slug: true },
   });
 
-  // Revalidate: home, listagens e páginas por slug (antiga e nova, se mudou)
   revalidatePath("/admin/animals");
   revalidatePath("/animais");
   if (oldSlug && oldSlug !== updated.slug) revalidatePath(`/animais/${oldSlug}`);

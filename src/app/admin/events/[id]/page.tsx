@@ -8,8 +8,8 @@ import CloudinaryUploader from "@/components/CloudinaryUploader";
 type Form = {
   title: string;
   slug: string;
-  startsAt: string; // datetime-local
-  endsAt: string; // datetime-local
+  startsAt: string;
+  endsAt: string;
   location: string;
   city: string;
   coverUrl: string;

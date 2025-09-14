@@ -1,4 +1,3 @@
-// src/app/sobre/page.tsx
 import Container from "@/components/Container";
 import Link from "next/link";
 import {
@@ -17,7 +16,6 @@ import {
 import PartnersSection from "@/components/PartnersSection";
 import { prisma } from "@/lib/prisma";
 
-// 🎬 add: wrappers de animação (client components já prontos)
 import { AnimatedHero, FadeIn, Stagger, CardHover } from "@/components/animated";
 
 export const metadata = {
@@ -36,7 +34,6 @@ export default async function SobrePage() {
 
   return (
     <>
-      {/* HERO com entrada suave */}
       <AnimatedHero
         className="
           relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]
@@ -83,7 +80,6 @@ export default async function SobrePage() {
       </AnimatedHero>
 
       <Container>
-        {/* Missão / Visão / Valores com stagger */}
         <Stagger className="mt-8 grid md:grid-cols-3 gap-6">
           <Card title="Missão" icon={<HeartHandshake className="h-5 w-5" />}>
             Promover o bem-estar animal por meio de resgates, reabilitação e
@@ -98,7 +94,6 @@ export default async function SobrePage() {
           </Card>
         </Stagger>
 
-        {/* O que fazemos – itens entram em sequência */}
         <section className="mt-10">
           <h2 className="text-xl sm:text-2xl font-extrabold">O que fazemos</h2>
           <Stagger className="mt-4 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -135,7 +130,6 @@ export default async function SobrePage() {
           </Stagger>
         </section>
 
-        {/* KPIs com fade e leve pop */}
         <section className="mt-10">
           <h2 className="text-xl sm:text-2xl font-extrabold">Nosso impacto</h2>
           <p className="mt-2 text-neutral-700">
@@ -153,7 +147,6 @@ export default async function SobrePage() {
           </FadeIn>
         </section>
 
-        {/* Mantido como estava */}
         <PartnersSection
           id="parceiros"
           title="Parceiros & apoiadores"
@@ -162,7 +155,6 @@ export default async function SobrePage() {
           ctaLabel="Seja parceiro"
         />
 
-        {/* Cards de navegação com hover animado */}
         <section className="mt-12 grid md:grid-cols-3 gap-6">
           <LinkCard
             href="/como-ajudar"
@@ -193,11 +185,6 @@ export default async function SobrePage() {
     </>
   );
 }
-
-/* =====================
- * componentes da página
- * (ganharam apenas toques de animação/hover)
- * ===================== */
 
 function Card({
   title,

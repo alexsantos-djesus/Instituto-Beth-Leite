@@ -1,4 +1,3 @@
-// src/app/api/admin/upload/sign/route.ts
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -9,11 +8,7 @@ cloudinary.config({
 });
 
 export async function GET() {
-  // Cloudinary espera timestamp em SEGUNDOS, não ms
   const timestamp = Math.round(Date.now() / 1000);
-
-  // Se quiser fixar uma pasta padrão, inclua aqui e também no form data do client
-  // const paramsToSign = { timestamp, folder: "ibl" };
   const paramsToSign = { timestamp };
 
   const signature = cloudinary.utils.api_sign_request(
@@ -26,8 +21,6 @@ export async function GET() {
     key: process.env.CLOUDINARY_API_KEY,
     timestamp,
     signature,
-    // Se for usar UNSIGNED uploads, informe o preset aqui (opcional para signed)
     preset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ?? null,
-    // folder: "ibl"
   });
 }

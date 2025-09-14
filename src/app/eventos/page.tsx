@@ -15,7 +15,7 @@ export const revalidate = 60;
 type EventForClient = {
   id: string;
   titulo: string;
-  data: string; // YYYY-MM-DD (local)
+  data: string;
   hora?: string;
   local: string;
   endereco?: string;

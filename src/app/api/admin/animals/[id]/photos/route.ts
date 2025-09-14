@@ -1,4 +1,3 @@
-// src/app/api/admin/animals/[id]/photos/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
@@ -24,7 +23,6 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     )
   );
 
-  // toca no atualizadoEm
   await prisma.animal.update({ where: { id }, data: { atualizadoEm: new Date() } });
 
   const animal = await prisma.animal.findUnique({ where: { id }, select: { slug: true } });

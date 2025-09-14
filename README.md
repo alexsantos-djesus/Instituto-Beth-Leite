@@ -31,11 +31,6 @@ Desenvolvido com **Next.js 14 + TypeScript + Prisma + Tailwind**, pronto para es
   <em>Um giro rápido pelas principais telas do site.</em>
 </p>
 
-<!--
-Coloque as imagens dentro de public/screenshots
-e ajuste os nomes dos arquivos abaixo se necessário.
--->
-
 <table>
   <tr>
     <td align="center" width="50%">

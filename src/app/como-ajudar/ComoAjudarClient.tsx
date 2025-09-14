@@ -1,4 +1,3 @@
-// src/app/como-ajudar/ComoAjudarClient.tsx
 "use client";
 
 import Link from "next/link";
@@ -20,7 +19,6 @@ import {
 } from "lucide-react";
 import { motion, type Variants } from "framer-motion";
 
-// variantes
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 18 },
   show: { opacity: 1, y: 0 },
@@ -37,7 +35,7 @@ const item: Variants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { type: "spring", stiffness: 380, damping: 22 }, // <- literal "spring"
+    transition: { type: "spring", stiffness: 380, damping: 22 },
   },
 };
 
@@ -55,7 +53,6 @@ export default function ComoAjudarClient() {
           overflow-hidden
         "
       >
-        {/* fundo “vivo” */}
         <motion.div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.16] md:opacity-[0.18] mix-blend-multiply"
@@ -289,7 +286,6 @@ export default function ComoAjudarClient() {
           </motion.aside>
         </div>
 
-        {/* Quadros com hover e stagger */}
         <motion.div
           variants={list}
           initial="hidden"
@@ -441,8 +437,6 @@ export default function ComoAjudarClient() {
     </>
   );
 }
-
-// ===== componentes =====
 
 const itemVariants = item;
 

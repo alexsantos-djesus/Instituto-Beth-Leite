@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Container from "@/components/Container";
 import CloudinaryUploader from "@/components/CloudinaryUploader";
 
-// 👇 helper local
 const slugify = (s: string) =>
   s
     .normalize("NFD")
@@ -59,7 +58,7 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
 
     const payload = {
       ...data,
-      slug: slugify(data.slug || data.nome), // 👈 força slug limpo
+      slug: slugify(data.slug || data.nome),
       idadeMeses: Number(data.idadeMeses || 0),
       raca: data.raca?.trim() || null,
       temperamento: data.temperamento?.trim() || null,
@@ -111,7 +110,7 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
               <input
                 className="w-full mt-1 border rounded-xl px-3 py-2"
                 value={data.slug}
-                onChange={(e) => updateField("slug", slugify(e.target.value))} // 👈 sanitize on type
+                onChange={(e) => updateField("slug", slugify(e.target.value))}
                 placeholder="ex.: lola-gata-srd"
               />
             </label>
@@ -128,7 +127,6 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
               </select>
             </label>
 
-            {/* bloco FIV/FELV aparece só quando for GATO */}
             {data.especie === "GATO" && (
               <label className="block">
                 <span className="text-sm">Testado FIV/FELV?</span>

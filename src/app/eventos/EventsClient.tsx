@@ -1,4 +1,3 @@
-// src/app/eventos/EventsClient.tsx
 "use client";
 
 import Image from "next/image";
@@ -6,11 +5,10 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { motion, type Variants } from "framer-motion";
 
-/* -------- tipos -------- */
 type Event = {
   id: string;
   titulo: string;
-  data: string; // YYYY-MM-DD local (ou ISO completo)
+  data: string;
   hora?: string;
   local: string;
   endereco?: string;
@@ -21,7 +19,6 @@ type Event = {
   destaque?: boolean;
 };
 
-/* -------- helpers -------- */
 function parseISO(iso?: string | null): Date | null {
   if (!iso) return null;
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
@@ -47,7 +44,6 @@ function fmtData(iso: string) {
   return new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(d);
 }
 
-/* -------- animação (tipadas) -------- */
 const fadeUpV = {
   hidden: { opacity: 0, y: 14 },
   show: { opacity: 1, y: 0 },
@@ -68,7 +64,6 @@ const itemV = {
   },
 } satisfies Variants;
 
-/* -------- UI -------- */
 function Badge({ children }: { children: React.ReactNode }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 text-teal-900 ring-1 ring-teal-200 px-2.5 py-0.5 text-xs">

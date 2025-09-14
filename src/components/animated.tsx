@@ -1,12 +1,8 @@
-// src/components/animated.tsx
 "use client";
 
 import { motion, type MotionProps, type Variants } from "framer-motion";
 import type { PropsWithChildren, ReactNode, HTMLAttributes, ComponentProps } from "react";
 
-/* =========================
- * Variants (tipados)
- * ========================= */
 export const fadeUp = {
   hidden: { opacity: 0, y: 18 },
   show: { opacity: 1, y: 0 },
@@ -30,9 +26,6 @@ export const item = {
   },
 } satisfies Variants;
 
-/* =========================
- * Helpers simples
- * ========================= */
 
 type MotionDivProps = ComponentProps<typeof motion.div>;
 
@@ -90,10 +83,6 @@ export function Stagger({
     </div>
   );
 }
-
-/* =========================
- * Wrappers/Blocos prontos
- * ========================= */
 
 export function AnimatedHero(props: ComponentProps<typeof motion.section>) {
   return (

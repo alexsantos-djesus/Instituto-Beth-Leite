@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 
 type Params = { params: { id: string } };
 
-/** Converte "YYYY-MM-DDTHH:mm" (input local) para um Date em UTC */
 function localDatetimeToUTC(v: unknown): Date | null {
   if (!v) return null;
   const s = String(v).trim();
@@ -34,8 +33,8 @@ export async function PUT(req: Request, { params }: Params) {
       where: { id: params.id },
       data: {
         title: b.title,
-        slug: b.slug, // se quiser validar unicidade aqui, pode adicionar verificação
-        startsAt: startsAt ?? undefined,                 // não muda se vier undefined
+        slug: b.slug,
+        startsAt: startsAt ?? undefined,
         endsAt: b.endsAt === null ? null : endsAt ?? undefined,
         location: b.location ?? null,
         city: b.city ?? null,

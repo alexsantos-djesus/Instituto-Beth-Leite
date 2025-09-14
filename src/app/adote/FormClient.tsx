@@ -11,7 +11,6 @@ import Button from "@/components/Button";
 import cepPromise from "cep-promise";
 import type { Resolver } from "react-hook-form";
 
-/* ------------ Toast minimalista ------------ */
 function ensureToastHost() {
   let host = document.getElementById("toast-host");
   if (!host) {
@@ -75,7 +74,6 @@ function toast(message: string, opts: ToastOptions = {}) {
   return { close };
 }
 
-/* ------------ Helpers ------------ */
 const onlyDigits = (s: string) => s.replace(/\D/g, "");
 function formatBRPhone(raw: string) {
   let d = onlyDigits(raw);
@@ -96,10 +94,6 @@ const enumSelect = <T extends readonly string[]>(vals: T) =>
     .min(1, "Escolha uma opção")
     .refine((v) => (vals as readonly string[]).includes(v), "Escolha uma opção")
     .transform((v) => v as T[number]);
-
-/* =================================================================== */
-/*                              SCHEMAS                                 */
-/* =================================================================== */
 
 const TempoAusente = ["ATE_4H", "H4_8", "H8_12", "12H_PLUS"] as const;
 
@@ -187,10 +181,6 @@ const FormSchema = z.object({
 });
 type FormData = z.infer<typeof FormSchema>;
 
-/* =================================================================== */
-/*                              COMPONENTE                              */
-/* =================================================================== */
-
 export default function FormClient({
   animals,
   defaultAnimalId,
@@ -254,7 +244,6 @@ export default function FormClient({
     if (defaultAnimalId) setValue("animalId", defaultAnimalId);
   }, [defaultAnimalId, setValue]);
 
-  // CEP -> autopreenche endereço
   const cepDigits = watch("cep");
   useEffect(() => {
     const d = onlyDigits(cepDigits || "");
@@ -267,7 +256,6 @@ export default function FormClient({
         setValue("uf", `${data.state}`.toUpperCase(), { shouldValidate: true });
       })
       .catch(() => {
-        // usuário pode digitar manualmente
       });
   }, [cepDigits, setValue]);
 
@@ -326,7 +314,6 @@ export default function FormClient({
         onSubmit={handleSubmit(onSubmit, onInvalid)}
         className="grid md:grid-cols-2 gap-4 bg-white p-6 rounded-2xl shadow-card"
       >
-        {/* Dados básicos */}
         <Select label="Animal" error={errors.animalId?.message} {...register("animalId")}>
           <option value="">Selecione</option>
           {animals.map((a) => (
@@ -371,7 +358,6 @@ export default function FormClient({
           <p className="mt-1 text-xs text-neutral-500">Precisa ser WhatsApp para contato.</p>
         </div>
 
-        {/* Endereço */}
         <Input
           label="CEP"
           placeholder="00000-000"
@@ -413,19 +399,16 @@ export default function FormClient({
           {...register("uf")}
         />
 
-        {/* ===== SEU PERFIL ===== */}
         <div className="md:col-span-2 mt-2">
           <div className="mb-2 font-semibold text-neutral-800">Seu perfil</div>
 
           <div className="grid md:grid-cols-2 gap-3">
-            {/* 1 */}
             <Select label="Você trabalha fora?" {...register("perfil.trabalhaFora")}>
               <option value="">Selecione</option>
               <option value="SIM">Sim</option>
               <option value="NAO">Não</option>
             </Select>
 
-            {/* 2 (condicional) */}
             {trabalhaFora === "SIM" && (
               <Select label="Tempo fora de casa" {...register("perfil.tempoAusente")}>
                 <option value="">Selecione</option>
@@ -436,14 +419,12 @@ export default function FormClient({
               </Select>
             )}
 
-            {/* 3 */}
             <Input
               label="Trabalha em qual ramo?"
               placeholder="Ex.: Educação, Saúde, Tecnologia..."
               {...register("perfil.ramoTrabalho")}
             />
 
-            {/* 4 */}
             <Select
               label="Fica alguém em casa durante o dia?"
               {...register("perfil.alguemEmCasaDia")}
@@ -453,63 +434,54 @@ export default function FormClient({
               <option value="NAO">Não</option>
             </Select>
 
-            {/* 5 */}
             <Input
               type="number"
               label="Quantas pessoas moram na residência?"
               {...register("perfil.moradoresQtd", { valueAsNumber: true })}
             />
 
-            {/* 6 */}
             <Select label="Há crianças na casa?" {...register("perfil.haCriancas")}>
               <option value="">Selecione</option>
               <option value="SIM">Sim</option>
               <option value="NAO">Não</option>
             </Select>
 
-            {/* 7 */}
             <Input
               type="number"
               label="Idade do responsável"
               {...register("perfil.idadeResponsavel", { valueAsNumber: true })}
             />
 
-            {/* 9 */}
             <Input
               label="Facebook / Instagram"
               placeholder="@usuario ou link"
               {...register("perfil.redesSociais")}
             />
 
-            {/* 10 */}
             <Select label="Tipo de moradia" {...register("perfil.moradiaTipo")}>
               <option value="">Selecione</option>
               <option value="CASA">Casa</option>
               <option value="APTO">Apartamento</option>
             </Select>
 
-            {/* 11 */}
             <Select label="Sua casa é bem fechada?" {...register("perfil.casaBemFechada")}>
               <option value="">Selecione</option>
               <option value="SIM">Sim</option>
               <option value="NAO">Não</option>
             </Select>
 
-            {/* 12 */}
             <Select label="O imóvel é" {...register("perfil.imovelTipo")}>
               <option value="">Selecione</option>
               <option value="PROPRIO">Próprio</option>
               <option value="ALUGADO">Alugado</option>
             </Select>
 
-            {/* 13 */}
             <Select label="Possui outros animais?" {...register("perfil.possuiOutrosAnimais")}>
               <option value="">Selecione</option>
               <option value="SIM">Sim</option>
               <option value="NAO">Não</option>
             </Select>
 
-            {/* 14/15 condicionais */}
             {possuiOutros === "SIM" && (
               <>
                 <Input
@@ -530,7 +502,6 @@ export default function FormClient({
               </>
             )}
 
-            {/* 16 */}
             <Select
               label="Sabe da importância da castração?"
               {...register("perfil.sabeImportanciaCastracao")}
@@ -540,7 +511,6 @@ export default function FormClient({
               <option value="NAO">Não</option>
             </Select>
 
-            {/* 17 */}
             <Select label="Onde viverá o animal?" {...register("perfil.ondeVivera")}>
               <option value="">Selecione</option>
               <option value="DENTRO">Dentro de casa</option>
@@ -548,7 +518,6 @@ export default function FormClient({
               <option value="MISTO">Dentro e fora</option>
             </Select>
 
-            {/* 18 */}
             <Select
               label="Morreu algum animal recentemente?"
               {...register("perfil.morreuAnimalRecente")}
@@ -558,7 +527,6 @@ export default function FormClient({
               <option value="NAO">Não</option>
             </Select>
 
-            {/* 19 */}
             <Select
               label="Condições financeiras para veterinário?"
               {...register("perfil.condicoesFinanceirasVet")}
@@ -568,7 +536,6 @@ export default function FormClient({
               <option value="NAO">Não</option>
             </Select>
 
-            {/* 20 */}
             <Select
               label="Gostaria de ver outros animais, caso não seja selecionado?"
               {...register("perfil.verOutrosSeNaoSelecionado")}
@@ -580,7 +547,6 @@ export default function FormClient({
           </div>
         </div>
 
-        {/* Mensagem */}
         <div className="md:col-span-2">
           <Textarea
             label="Mensagem"

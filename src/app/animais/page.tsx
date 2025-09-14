@@ -1,4 +1,3 @@
-// src/app/animais/page.tsx
 import { prisma } from "@/lib/prisma";
 import Container from "@/components/Container";
 import AnimalCard from "@/components/AnimalCard";
@@ -6,7 +5,6 @@ import FilterBar from "@/components/FilterBar";
 import { Metadata } from "next";
 import { PawPrint } from "lucide-react";
 
-// 👇 utilitários client-side de animação
 import { FadeIn, GrowIn, Stagger } from "@/components/animated";
 
 export const metadata: Metadata = {
@@ -60,7 +58,6 @@ export default async function AnimaisPage({
 
   return (
     <>
-      {/* TOPO com fundo e entradas animadas */}
       <section className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-[var(--header-h)] pt-[calc(var(--header-h)+16px)] bg-gradient-to-b from-[#66ff94] via-[#bfffda] to-[#f1fffc] overflow-hidden">
         <div
           aria-hidden
@@ -107,7 +104,6 @@ export default async function AnimaisPage({
       </section>
 
       <Container className="pt-4 md:pt-6">
-        {/* Barra de filtros entra com “grow” */}
         <GrowIn>
           <div className="bg-white rounded-2xl shadow-card ring-1 ring-emerald-200/60 p-4">
             <FilterBar />
@@ -121,7 +117,6 @@ export default async function AnimaisPage({
             </p>
           </FadeIn>
         ) : (
-          // Grade com stagger + hover sutil nas cards
           <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6" gap={0.06}>
             {animals.map((a) => (
               <FadeIn key={a.id}>

@@ -1,4 +1,3 @@
-// src/components/HeroMobileMenu.tsx
 "use client";
 
 import { Menu } from "lucide-react";
@@ -11,8 +10,6 @@ export default function HeroMobileMenu() {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement | null>(null);
   const pathname = usePathname();
-
-  // trava/destrava scroll da página
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = open ? "hidden" : prev || "";
@@ -21,16 +18,13 @@ export default function HeroMobileMenu() {
     };
   }, [open]);
 
-  // fecha ao navegar e devolve foco ao botão
   useEffect(() => {
     if (open) {
       setOpen(false);
       btnRef.current?.focus();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  // fecha com ESC
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -67,7 +61,6 @@ export default function HeroMobileMenu() {
         )}
       </AnimatePresence>
 
-      {/* o Drawer recebe o id referenciado por aria-controls */}
       <MobileMenuDrawer
         open={open}
         onClose={() => {

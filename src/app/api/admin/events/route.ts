@@ -1,21 +1,18 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-/** Gera slug básico e único */
 function slugify(s: string) {
   return s
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove acentos
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 }
 
-/** Converte "YYYY-MM-DDTHH:mm" (input local) para um Date em UTC */
 function localDatetimeToUTC(v: unknown): Date | null {
   if (!v) return null;
   const s = String(v).trim();
   if (!s) return null;
-  // aceita "YYYY-MM-DDTHH:mm" e também ISO completo
   const m = s.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);
   if (m) {
     const [_, yy, MM, dd, hh, mm] = m.map(Number);
@@ -26,7 +23,6 @@ function localDatetimeToUTC(v: unknown): Date | null {
 }
 
 export async function GET() {
-  // Admin: pode ver todos. Ordena por published desc e por data desc
   const list = await prisma.event.findMany({
     orderBy: [{ published: "desc" }, { startsAt: "desc" }],
   });
@@ -47,7 +43,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // slug único
     let slug: string = (b.slug && String(b.slug).trim()) || slugify(b.title);
     let base = slug, i = 1;
     while (await prisma.event.findUnique({ where: { slug } })) {

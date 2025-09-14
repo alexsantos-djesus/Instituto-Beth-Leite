@@ -1,4 +1,3 @@
-// NADA de "use client" aqui
 import type { Metadata } from "next";
 import ComoAjudarClient from "./ComoAjudarClient";
 

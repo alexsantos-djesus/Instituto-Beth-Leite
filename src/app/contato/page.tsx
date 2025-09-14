@@ -1,4 +1,3 @@
-// src/app/contato/page.tsx
 import Container from "@/components/Container";
 import { ChevronDown, Mail, Instagram } from "lucide-react";
 

@@ -1,4 +1,3 @@
-// src/app/padrinhos/page.tsx
 import Link from "next/link";
 import Container from "@/components/Container";
 import { Great_Vibes } from "next/font/google";
@@ -16,7 +15,6 @@ import {
   Calendar,
 } from "lucide-react";
 
-// 👇 importa apenas wrappers/efeitos (client components)
 import {
   AnimatedHero,
   KpiAnimated,
@@ -52,7 +50,6 @@ export default function PadrinhosPage() {
 
   return (
     <>
-      {/* === HERO com entrada suave === */}
       <AnimatedHero
         className="
           relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]
@@ -112,7 +109,6 @@ export default function PadrinhosPage() {
       </AnimatedHero>
 
       <Container>
-        {/* === KPIs com fade-up === */}
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           <KpiAnimated
             icon={<Users className="h-5 w-5" />}
@@ -125,7 +121,6 @@ export default function PadrinhosPage() {
             value={animaisApoiados}
           />
 
-          {/* Meta mensal com barra animada */}
           <div className="bg-white rounded-2xl p-5 shadow-card">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 font-semibold">
@@ -137,12 +132,10 @@ export default function PadrinhosPage() {
               </div>
             </div>
 
-            {/* substitui a barra fixa por animação, mas mantém o % final */}
             <ProgressAnimated percent={progresso} />
           </div>
         </div>
 
-        {/* === Planos com stagger + hover tilt sutil === */}
         <section className="mt-10">
           <h2 className="text-xl font-extrabold mb-3">Planos de apadrinhamento</h2>
           <p className="text-neutral-700 mb-5">
@@ -191,7 +184,6 @@ export default function PadrinhosPage() {
           </GridStagger>
         </section>
 
-        {/* === Como funciona (mesma UI, entrada suave) === */}
         <section className="mt-12">
           <h2 className="text-xl font-extrabold mb-3">Como funciona</h2>
           <div className="grid gap-4 md:grid-cols-4">
@@ -218,7 +210,6 @@ export default function PadrinhosPage() {
           </div>
         </section>
 
-        {/* === Mural com hover elástico === */}
         <section className="mt-12">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-xl font-extrabold">Mural de Padrinhos</h2>
@@ -250,7 +241,6 @@ export default function PadrinhosPage() {
           </div>
         </section>
 
-        {/* === FAQ com entrada suave === */}
         <section className="mt-12">
           <h2 className="text-xl font-extrabold mb-3">Dúvidas frequentes</h2>
           <div className="space-y-3">
@@ -301,8 +291,6 @@ export default function PadrinhosPage() {
     </>
   );
 }
-
-/* ===== componentes estáticos originais (inalterados) ===== */
 
 function Kpi({
   icon,

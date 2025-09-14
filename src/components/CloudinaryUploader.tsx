@@ -1,14 +1,6 @@
 "use client";
 import { useState } from "react";
 
-/**
- * Pode usar de duas formas:
- * 1) Upload único (default):
- *    <CloudinaryUploader onUploaded={(url) => ...} />
- *
- * 2) Vários uploads de uma vez:
- *    <CloudinaryUploader multiple onAdd={(urls) => ...} />
- */
 type Props =
   | {
       label?: string;
@@ -35,7 +27,7 @@ export default function CloudinaryUploader({
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
-    input.multiple = !!onAdd || multiple; // ativa múltiplo quando for usar onAdd/multiple
+    input.multiple = !!onAdd || multiple;
 
     input.onchange = async () => {
       const files = input.files ? Array.from(input.files) : [];
@@ -43,10 +35,8 @@ export default function CloudinaryUploader({
 
       setBusy(true);
       try {
-        // Assinatura do upload
         const sign = await fetch("/api/admin/upload/sign").then((r) => r.json());
 
-        // tenta ler o preset de várias formas (compatibilidade)
         const preset =
           process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
           process.env.CLOUDINARY_UPLOAD_PRESET ||
@@ -54,7 +44,6 @@ export default function CloudinaryUploader({
 
         const uploadUrl = `https://api.cloudinary.com/v1_1/${sign.cloud}/auto/upload`;
 
-        // faz upload de todos (se múltiplo) ou apenas um
         const results = await Promise.all(
           files.map(async (file) => {
             const fd = new FormData();
@@ -71,8 +60,6 @@ export default function CloudinaryUploader({
 
         const urls = results.filter(Boolean) as string[];
 
-        // Compatibilidade: se onAdd foi passado, devolve todas as URLs;
-        // se onUploaded foi passado, dispara para cada URL (ou única).
         if (onAdd && urls.length) onAdd(urls);
         if (onUploaded && urls.length) urls.forEach((u) => onUploaded(u));
       } finally {

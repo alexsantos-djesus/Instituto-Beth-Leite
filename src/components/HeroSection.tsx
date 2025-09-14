@@ -1,4 +1,3 @@
-// src/components/HeroSection.tsx
 "use client";
 
 import Image from "next/image";
@@ -15,7 +14,6 @@ type Props = {
 function CountUp({ to, label }: { to: number; label: string }) {
   const mv = useMotionValue(0);
 
-  // formata enquanto anima (aqui já arredonda e põe separador)
   const shown = useTransform(mv, (v) => Math.floor(v).toLocaleString("pt-BR"));
 
   useEffect(() => {
@@ -23,7 +21,7 @@ function CountUp({ to, label }: { to: number; label: string }) {
       duration: 1.2,
       ease: "easeOut",
     });
-    return controls.stop; // cleanup
+    return controls.stop;
   }, [to, mv]);
 
   return (
@@ -40,7 +38,6 @@ export default function HeroSection({
 }: Props) {
   return (
     <section className="relative overflow-hidden">
-      {/* BACKDROP COM LUZES FLOTUANTES */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-b from-brand-soft via-white to-white" />
         <motion.div
@@ -57,7 +54,6 @@ export default function HeroSection({
 
       <Container className="py-12 sm:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-10">
-          {/* LADO ESQUERDO */}
           <motion.div
             className="space-y-6 order-1 md:order-1 text-center md:text-left"
             initial={{ opacity: 0, y: 18 }}
@@ -116,7 +112,6 @@ export default function HeroSection({
               de um animal que precisa de você.
             </motion.p>
 
-            {/* Counters animados */}
             <motion.div
               className="grid grid-cols-3 max-w-xs mx-auto md:mx-0 gap-4 text-center"
               initial={{ opacity: 0, y: 12 }}
@@ -130,7 +125,6 @@ export default function HeroSection({
             </motion.div>
           </motion.div>
 
-          {/* LADO DIREITO (IMAGEM) */}
           <motion.div
             className="hidden md:block order-2 md:order-2 relative"
             initial={{ opacity: 0, scale: 0.98, y: 12 }}
@@ -154,7 +148,6 @@ export default function HeroSection({
               />
             </motion.div>
 
-            {/* “Patas” decorativas flutuando sutilmente (opcionais) */}
             <motion.img
               src="/patinhas.png"
               alt=""

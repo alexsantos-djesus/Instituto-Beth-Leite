@@ -64,7 +64,6 @@ export default async function AnimalsAdminList() {
 
   return (
     <Container className="py-8">
-      {/* ===== CABEÇALHO COM BOTÃO ===== */}
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-extrabold">Animais</h1>
         <Link
@@ -180,7 +179,6 @@ export default async function AnimalsAdminList() {
         </ul>
       )}
 
-      {/* (Opcional) Botão flutuante para criar novo rapidamente */}
       <Link
         href="/admin/animals/new"
         className="fixed bottom-6 right-6 rounded-full shadow-lg bg-neutral-900 text-white px-5 py-3 hover:bg-neutral-800"

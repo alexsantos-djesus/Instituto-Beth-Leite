@@ -1,4 +1,3 @@
-// src/app/api/admin/animals/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
@@ -20,7 +19,6 @@ const asFivFelv = (v: unknown): FivFelv | null => {
   return s === "POSITIVO" || s === "NEGATIVO" || s === "NAO_TESTADO" ? (s as FivFelv) : null;
 };
 
-// Gera um slug único se já existir
 async function uniqueSlug(base: string) {
   let s = slugify(base);
   if (!s) return s;
@@ -63,7 +61,6 @@ export async function POST(req: Request) {
       fivFelvStatus,
     } = body ?? {};
 
-    // validações mínimas
     const cleanedNome = String(nome || "").trim();
     const cleanedDescricao = typeof descricao === "string" ? descricao : "";
     if (!cleanedNome) {
@@ -73,7 +70,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Descrição é obrigatória." }, { status: 400 });
     }
 
-    // slug seguro e único
     const baseSlug = slugify(slug || cleanedNome);
     if (!baseSlug) {
       return NextResponse.json({ error: "Slug inválido." }, { status: 400 });
@@ -98,7 +94,6 @@ export async function POST(req: Request) {
         saudeDetalhes: saudeDetalhes ?? null,
         dataResgate: dataResgate ? new Date(dataResgate) : null,
         fivFelvStatus: especie === "GATO" ? asFivFelv(fivFelvStatus) : null,
-        // atualizadoEm é @updatedAt; não precisamos enviar manualmente
         photos:
           Array.isArray(photos) && photos.length
             ? {
@@ -114,7 +109,6 @@ export async function POST(req: Request) {
       include: { photos: { orderBy: { sortOrder: "asc" } } },
     });
 
-    // Revalidate páginas relevantes
     revalidatePath("/");
     revalidatePath("/animais");
     revalidatePath(`/animais/${created.slug}`);
@@ -122,9 +116,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json(created, { status: 201 });
   } catch (err: any) {
-    // Tratamento de erros comuns do Prisma
+
     if (err?.code === "P2002") {
-      // unique constraint
       return NextResponse.json({ error: "Já existe um animal com esse slug." }, { status: 409 });
     }
     if (err?.code === "P2003") {
@@ -133,7 +126,6 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-    // Loga no server para depurar
     console.error("POST /api/admin/animals error:", err);
     return NextResponse.json({ error: "Erro interno ao salvar o animal." }, { status: 500 });
   }

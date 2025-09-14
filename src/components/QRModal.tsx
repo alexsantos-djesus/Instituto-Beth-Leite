@@ -19,53 +19,34 @@ export default function QRModal({ url, nome, especie, sexo, children }: Props) {
 
     const buildPoster = async () => {
       const full = `${window.location.origin}${url}`;
-
-      // Tema por sexo
       const isMacho = sexo === "MACHO";
-      const bg = isMacho ? "#e6f0ff" : "#ffe6f2"; // azul clarinho / rosa clarinho
-      const accent = isMacho ? "#2563eb" : "#db2777"; // azul / rosa mais forte
-
-      // Padrão de patinhas por espécie
+      const bg = isMacho ? "#e6f0ff" : "#ffe6f2";
+      const accent = isMacho ? "#2563eb" : "#db2777";
       const pawSrc = especie === "GATO" ? "/patinhas-gatos.png" : "/patinhas-cachorro.jpg";
-
-      // Tamanho do “cartaz” (boa qualidade p/ imprimir em A5/A4)
       const W = 900;
       const H = 1200;
-
-      // 1) Gera o QR em um canvas separado (fundo transparente)
       const qrCanvas = document.createElement("canvas");
       await QRCode.toCanvas(qrCanvas, full, {
         width: 560,
         margin: 2,
         color: {
           dark: "#111111",
-          light: "#00000000", // transparente
+          light: "#00000000",
         },
       });
-
-      // 2) Carrega a imagem de patinhas
       const pawImg = await loadImage(pawSrc);
-
-      // 3) Monta o cartaz final
       const poster = document.createElement("canvas");
       poster.width = W;
       poster.height = H;
       const ctx = poster.getContext("2d")!;
-
-      // Fundo principal
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, W, H);
-
-      // Padrão de patinhas suave
       const pattern = ctx.createPattern(pawImg, "repeat");
       if (pattern) {
         ctx.globalAlpha = 0.08;
         ctx.fillStyle = pattern;
         ctx.fillRect(0, 0, W, H);
-        ctx.globalAlpha = 1;
-      }
-
-      // “Cartão” branco com cantos arredondados
+        ctx.globalAlpha = 1;}
       const CARD_X = 80;
       const CARD_Y = 160;
       const CARD_W = W - CARD_X * 2;
@@ -73,29 +54,20 @@ export default function QRModal({ url, nome, especie, sexo, children }: Props) {
       roundRect(ctx, CARD_X, CARD_Y, CARD_W, CARD_H, 32);
       ctx.fillStyle = "#ffffff";
       ctx.fill();
-
-      // Título “Oi titio, eu sou”
       ctx.font = "bold 40px system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
       ctx.fillStyle = "#111111";
       ctx.textAlign = "center";
       ctx.fillText("Oi titio, eu sou", W / 2, CARD_Y + 80);
-
-      // Nome destacado com a cor de destaque
       ctx.font = "900 72px system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
       ctx.fillStyle = accent;
       fitAndFillText(ctx, nome, W / 2, CARD_Y + 160, CARD_W - 120, 72);
-
-      // QR centralizado
       const qrSize = 560;
       const qrX = (W - qrSize) / 2;
       const qrY = CARD_Y + 220;
-      // moldura do QR
       roundRect(ctx, qrX - 20, qrY - 20, qrSize + 40, qrSize + 40, 24);
       ctx.fillStyle = "#f3f4f6";
       ctx.fill();
       ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
-
-      // Rodapé com instrução
       ctx.font = "500 28px system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
       ctx.fillStyle = "#4b5563";
       ctx.fillText(
@@ -103,10 +75,8 @@ export default function QRModal({ url, nome, especie, sexo, children }: Props) {
         W / 2,
         qrY + qrSize + 80
       );
-
       setDataURL(poster.toDataURL("image/png"));
     };
-
     buildPoster();
   }, [open, url, nome, especie, sexo]);
 
@@ -168,12 +138,10 @@ export default function QRModal({ url, nome, especie, sexo, children }: Props) {
   );
 }
 
-/* ===== helpers ===== */
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    // importante p/ evitar problemas de CORS ao transformar em dataURL
     img.crossOrigin = "anonymous";
     img.onload = () => resolve(img);
     img.onerror = reject;
@@ -207,7 +175,6 @@ function fitAndFillText(
   maxWidth: number,
   baseSize: number
 ) {
-  // reduz a fonte se o nome for muito comprido
   let size = baseSize;
   ctx.font = `900 ${size}px system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial`;
   while (ctx.measureText(text).width > maxWidth && size > 28) {

@@ -1,4 +1,3 @@
-// components/Modal.tsx
 "use client";
 import { X } from "lucide-react";
 
@@ -12,7 +11,7 @@ export default function Modal({
   open: boolean;
   onClose: () => void;
   title?: React.ReactNode;
-  right?: React.ReactNode; // ex.: <select status ... />
+  right?: React.ReactNode;
   children: React.ReactNode;
 }) {
   if (!open) return null;
@@ -24,15 +23,12 @@ export default function Modal({
       aria-modal="true"
       onClick={onClose}
     >
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
 
-      {/* Card */}
       <div
         className="relative z-10 w-full max-w-5xl rounded-2xl bg-white shadow-2xl ring-1 ring-neutral-200"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header fixo */}
         <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b px-5 py-3 bg-white/95 backdrop-blur">
           <div className="min-w-0 text-lg font-semibold truncate">{title}</div>
           <div className="flex items-center gap-3">
@@ -47,7 +43,6 @@ export default function Modal({
           </div>
         </div>
 
-        {/* Conteúdo rolável */}
         <div className="px-5">
           <div className="max-h-[70vh] md:max-h-[78vh] overflow-y-auto py-4 pr-1">{children}</div>
         </div>

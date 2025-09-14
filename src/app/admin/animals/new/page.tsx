@@ -65,7 +65,6 @@ export default function NewAnimalPage() {
       convivencia: form.convivencia.trim() || null,
       saudeDetalhes: form.saudeDetalhes.trim() || null,
       dataResgate: form.dataResgate ? new Date(form.dataResgate) : null,
-      // só enviar para gatos, senão null
       fivFelvStatus: form.especie === "GATO" ? form.fivFelvStatus : null,
       photos: fotos.map((p, i) => ({
         url: p.url,
@@ -113,7 +112,6 @@ export default function NewAnimalPage() {
 
       <form onSubmit={submit} className="bg-white rounded-2xl shadow-card p-6 space-y-5 max-w-3xl">
         <div className="grid sm:grid-cols-2 gap-4">
-          {/* Nome */}
           <label className="block">
             <span className="text-sm">Nome</span>
             <input
@@ -130,13 +128,12 @@ export default function NewAnimalPage() {
             />
           </label>
 
-          {/* Slug */}
           <label className="block">
             <span className="text-sm">Slug</span>
             <input
               className="w-full border rounded-xl px-3 py-2"
               value={form.slug}
-              onChange={(e) => onChange("slug", slugify(e.target.value))} // sanitiza sempre
+              onChange={(e) => onChange("slug", slugify(e.target.value))}
             />
           </label>
 
@@ -152,7 +149,6 @@ export default function NewAnimalPage() {
             </select>
           </label>
 
-          {/* bloco FIV/FELV aparece só quando for GATO */}
           {form.especie === "GATO" && (
             <label className="block">
               <span className="text-sm">Testado FIV/FELV?</span>

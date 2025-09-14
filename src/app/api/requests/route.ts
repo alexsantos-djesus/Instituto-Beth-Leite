@@ -2,50 +2,30 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
-/* -------------------- helpers -------------------- */
 const onlyDigits = (s: string) => String(s || "").replace(/\D/g, "");
 
-/* -------------------- Perfil (novo) -------------------- */
 const TempoAusente = ["ATE_4H", "H4_8", "H8_12", "12H_PLUS"] as const;
 
 const PerfilBase = z.object({
-  // 1
   trabalhaFora: z.enum(["SIM", "NAO"]),
-  // 2 (condicional quando trabalhaFora = SIM)
   tempoAusente: z.enum(TempoAusente).optional(),
-  // 3
   ramoTrabalho: z.string().min(2).max(120),
-  // 4
   alguemEmCasaDia: z.enum(["SIM", "NAO"]),
-  // 5
   moradoresQtd: z.coerce.number().int().min(1).max(50),
-  // 6
   haCriancas: z.enum(["SIM", "NAO"]),
-  // 7
   idadeResponsavel: z.coerce.number().int().min(18).max(120),
-  // 9
   redesSociais: z.string().optional().default(""),
-  // 10
   moradiaTipo: z.enum(["CASA", "APTO"]),
-  // 11
   casaBemFechada: z.enum(["SIM", "NAO"]),
-  // 12
   imovelTipo: z.enum(["PROPRIO", "ALUGADO"]),
-  // 13
   possuiOutrosAnimais: z.enum(["SIM", "NAO"]),
-  // 14/15 (condicionais)
   qtdCaes: z.coerce.number().int().min(0).max(50).optional(),
   qtdGatos: z.coerce.number().int().min(0).max(50).optional(),
   castrados: z.enum(["SIM", "NAO"]).optional(),
-  // 16
   sabeImportanciaCastracao: z.enum(["SIM", "NAO"]),
-  // 17
   ondeVivera: z.enum(["DENTRO", "QUINTAL", "MISTO"]),
-  // 18
   morreuAnimalRecente: z.enum(["SIM", "NAO"]),
-  // 19
   condicoesFinanceirasVet: z.enum(["SIM", "NAO"]),
-  // 20
   verOutrosSeNaoSelecionado: z.enum(["SIM", "NAO"]),
 });
 
@@ -75,13 +55,11 @@ const PerfilSchema = PerfilBase.superRefine((val, ctx) => {
   }
 });
 
-/* -------------------- Body do POST -------------------- */
 const CreateRequestSchema = z.object({
   animalId: z.coerce.number().int().positive(),
   nome: z.string().min(2).max(120),
   email: z.string().email(),
 
-  // telefone: salvar em dígitos (DDD+9) — precisa ser WhatsApp
   telefone: z
     .string()
     .min(8)
@@ -89,7 +67,6 @@ const CreateRequestSchema = z.object({
     .transform(onlyDigits)
     .refine((v) => v.length === 11, "Telefone deve ter DDD + 9 dígitos (11 números)"),
 
-  // Endereço (novos campos; mantemos cidade/uf também como colunas)
   cep: z
     .string()
     .min(1, "Informe o CEP")
@@ -108,7 +85,7 @@ const CreateRequestSchema = z.object({
 
   mensagem: z.string().min(5).max(1000),
 
-  perfil: PerfilSchema, // todo o resto do questionário
+  perfil: PerfilSchema,
 });
 
 export async function GET() {
@@ -142,16 +119,16 @@ export async function POST(req: Request) {
         animalId: data.animalId,
         nome: data.nome,
         email: data.email,
-        telefone: data.telefone, // já vem só com dígitos
+        telefone: data.telefone,
         cidade: data.cidade,
-        uf: data.uf,             // já uppercase pelo schema
+        uf: data.uf,
         cep: data.cep,
         endereco: data.endereco,
         numero: data.numero,
         bairro: data.bairro,
 
         mensagem: data.mensagem,
-        perfil: data.perfil,     // guarda o restante do questionário
+        perfil: data.perfil,
       },
     });
 
