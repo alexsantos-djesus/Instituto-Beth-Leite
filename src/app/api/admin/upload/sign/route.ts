@@ -8,19 +8,22 @@ cloudinary.config({
 });
 
 export async function GET() {
-  const timestamp = Math.round(Date.now() / 1000);
-  const paramsToSign = { timestamp };
+  const cloud = process.env.CLOUDINARY_CLOUD_NAME!;
+  const key = process.env.CLOUDINARY_API_KEY!;
+  const secret = process.env.CLOUDINARY_API_SECRET!;
+  const preset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || undefined;
+  const timestamp = Math.floor(Date.now() / 1000);
 
-  const signature = cloudinary.utils.api_sign_request(
-    paramsToSign,
-    process.env.CLOUDINARY_API_SECRET!
-  );
+  const paramsToSign: Record<string, string | number | boolean> = { timestamp };
+  if (preset) paramsToSign.upload_preset = preset;
+
+  const signature = cloudinary.utils.api_sign_request(paramsToSign, secret);
 
   return NextResponse.json({
-    cloud: process.env.CLOUDINARY_CLOUD_NAME,
-    key: process.env.CLOUDINARY_API_KEY,
+    cloud,
+    key,
     timestamp,
     signature,
-    preset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ?? null,
+    upload_preset: preset ?? null,
   });
 }
