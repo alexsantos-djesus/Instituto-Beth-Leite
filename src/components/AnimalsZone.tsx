@@ -22,28 +22,32 @@ export default function AnimalsZone({ destaques }: { destaques: any[] }) {
         </Link>
       </div>
 
+      {/* 2 col (mobile) → 3 col (sm+) */}
       <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-4">
-        {destaques.map((a) => {
+        {destaques.map((a, i) => {
           const cover = a.photos?.[0];
           return (
             <Link
               key={a.id}
               href={`/animais/${a.slug}`}
-              className="group relative overflow-hidden rounded-2xl bg-neutral-100 shadow-md"
+              // esconde apenas o 4º item (index 3) em telas lg+
+              className={`group relative overflow-hidden rounded-2xl bg-neutral-100 shadow-md ${
+                i === 3 ? "lg:hidden" : ""
+              }`}
             >
               {cover && (
                 <Image
                   src={cover.url}
-                  alt={cover.alt}
+                  alt={cover.alt || a.nome}
                   width={600}
                   height={800}
-                  className="h-56 w-full object-cover group-hover:scale-105 transition-transform"
+                  className="h-56 w-full object-cover transition-transform group-hover:scale-105"
                 />
               )}
               <div className="absolute inset-x-0 bottom-0 bg-black/40 text-white p-2 text-sm">
                 <div className="font-semibold truncate">{a.nome}</div>
                 <div className="opacity-90">
-                  {a.especie} • {a.porte.toLowerCase()}
+                  {a.especie} • {String(a.porte).toLowerCase()}
                 </div>
               </div>
             </Link>

@@ -1,0 +1,13 @@
+name: Warm Neon
+on:
+  schedule:
+    - cron: "*/5 * * * *"  # a cada 5 min
+  workflow_dispatch:
+
+jobs:
+  curl:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping warm endpoint
+        run: |
+          curl -fsS https://www.institutobethleite.com.br/api/warm-db || true
