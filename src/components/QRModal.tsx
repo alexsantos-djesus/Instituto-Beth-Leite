@@ -18,65 +18,81 @@ export default function QRModal({ url, nome, especie, sexo, children }: Props) {
     if (!open) return;
 
     const buildPoster = async () => {
-      const full = `${window.location.origin}${url}`;
+      // domínio oficial no QR
+      const envBase = process.env.NEXT_PUBLIC_SITE_URL; // ex.: https://institutobethleite.com.br
+      let origin = envBase || window.location.origin;
+      if (!envBase && /\.vercel\.app$/.test(new URL(origin).hostname)) {
+        origin = "https://institutobethleite.com.br";
+      }
+      const full = `${origin}${url}`;
+      const W = 720;
+      const H = 1024;
+      const qrSize = Math.floor(W * 0.6);
+
       const isMacho = sexo === "MACHO";
       const bg = isMacho ? "#e6f0ff" : "#ffe6f2";
       const accent = isMacho ? "#2563eb" : "#db2777";
       const pawSrc = especie === "GATO" ? "/patinhas-gatos.png" : "/patinhas-cachorro.jpg";
-      const W = 900;
-      const H = 1200;
+
       const qrCanvas = document.createElement("canvas");
       await QRCode.toCanvas(qrCanvas, full, {
-        width: 560,
+        width: qrSize,
         margin: 2,
-        color: {
-          dark: "#111111",
-          light: "#00000000",
-        },
+        color: { dark: "#111111", light: "#00000000" },
       });
+
       const pawImg = await loadImage(pawSrc);
+
       const poster = document.createElement("canvas");
       poster.width = W;
       poster.height = H;
       const ctx = poster.getContext("2d")!;
+
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, W, H);
       const pattern = ctx.createPattern(pawImg, "repeat");
       if (pattern) {
-        ctx.globalAlpha = 0.08;
+        ctx.globalAlpha = 0.07;
         ctx.fillStyle = pattern;
         ctx.fillRect(0, 0, W, H);
-        ctx.globalAlpha = 1;}
-      const CARD_X = 80;
-      const CARD_Y = 160;
+        ctx.globalAlpha = 1;
+      }
+
+      const CARD_X = 64;
+      const CARD_Y = 120;
       const CARD_W = W - CARD_X * 2;
       const CARD_H = H - CARD_Y * 2;
-      roundRect(ctx, CARD_X, CARD_Y, CARD_W, CARD_H, 32);
+      roundRect(ctx, CARD_X, CARD_Y, CARD_W, CARD_H, 28);
       ctx.fillStyle = "#ffffff";
       ctx.fill();
-      ctx.font = "bold 40px system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
-      ctx.fillStyle = "#111111";
+
       ctx.textAlign = "center";
-      ctx.fillText("Oi titio, eu sou", W / 2, CARD_Y + 80);
-      ctx.font = "900 72px system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
+      ctx.fillStyle = "#111111";
+      ctx.font = "bold 36px system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
+      ctx.fillText("Oi titio, eu sou", W / 2, CARD_Y + 72);
+
       ctx.fillStyle = accent;
-      fitAndFillText(ctx, nome, W / 2, CARD_Y + 160, CARD_W - 120, 72);
-      const qrSize = 560;
-      const qrX = (W - qrSize) / 2;
-      const qrY = CARD_Y + 220;
-      roundRect(ctx, qrX - 20, qrY - 20, qrSize + 40, qrSize + 40, 24);
+      fitAndFillText(ctx, nome, W / 2, CARD_Y + 142, CARD_W - 120, 64);
+
+      const qrX = Math.round((W - qrSize) / 2);
+      const qrY = CARD_Y + 200;
+      roundRect(ctx, qrX - 16, qrY - 16, qrSize + 32, qrSize + 32, 20);
       ctx.fillStyle = "#f3f4f6";
       ctx.fill();
       ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
-      ctx.font = "500 28px system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
+
+      // subtítulo
+      ctx.font = "500 22px system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial";
       ctx.fillStyle = "#4b5563";
       ctx.fillText(
         "Aponte a câmera do celular para saber mais sobre mim!",
         W / 2,
-        qrY + qrSize + 80
+        Math.min(H - 64, qrY + qrSize + 80)
       );
+
       setDataURL(poster.toDataURL("image/png"));
     };
+
     buildPoster();
   }, [open, url, nome, especie, sexo]);
 
@@ -91,13 +107,17 @@ export default function QRModal({ url, nome, especie, sexo, children }: Props) {
           onClick={() => setOpen(false)}
         >
           <div
-            className="bg-white rounded-2xl p-6 max-w-[720px] w-full"
+            className="bg-white rounded-2xl p-6 w-full max-w-[420px] sm:max-w-[480px]"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="font-bold mb-3">QR Code da página</h3>
 
             {dataURL ? (
-              <img src={dataURL} alt={`QR do ${nome}`} className="w-full rounded-xl border" />
+              <img
+                src={dataURL}
+                alt={`QR do ${nome}`}
+                className="w-full h-auto rounded-xl border max-h-[72vh] object-contain"
+              />
             ) : (
               <div className="h-64 bg-neutral-100 rounded-xl animate-pulse" />
             )}
@@ -137,7 +157,6 @@ export default function QRModal({ url, nome, especie, sexo, children }: Props) {
     </>
   );
 }
-
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
