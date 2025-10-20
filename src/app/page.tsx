@@ -6,7 +6,6 @@ import HeroSection from "@/components/HeroSection";
 import PartnersSection from "@/components/PartnersSection";
 
 export default async function HomePage() {
-  await warm(); // acorda o Neon
   const destaques = await prisma.animal.findMany({
     include: { photos: true },
     orderBy: { criadoEm: "desc" },
