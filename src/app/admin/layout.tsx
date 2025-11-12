@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import Container from "@/components/Container";
 import { PawPrint } from "lucide-react";
 
-const WHATS_LINK = "https://wa.me/5599999999999"; // ajuste
-const WHATS_LABEL = "(99) 99999-9999"; // ajuste
+const WHATS_LINK = "https://wa.me/5551992793931";
+const WHATS_LABEL = "(51) 99279-3931";
 
 type Me = {
   id: number | string;
