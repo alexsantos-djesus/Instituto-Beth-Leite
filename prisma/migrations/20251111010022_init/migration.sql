@@ -1,4 +1,4 @@
-﻿-- CreateEnum
+-- CreateEnum
 CREATE TYPE "FivFelvStatus" AS ENUM ('POSITIVO', 'NEGATIVO', 'NAO_TESTADO');
 
 -- CreateEnum
@@ -71,10 +71,12 @@ CREATE TABLE "AdoptionRequest" (
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
-    "name" TEXT,
+    "name" TEXT NOT NULL,
     "password" TEXT NOT NULL,
+    "institution" TEXT,
+    "photoUrl" TEXT,
     "role" "Role" NOT NULL DEFAULT 'EDITOR',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -180,4 +182,3 @@ ALTER TABLE "AdoptionRequest" ADD CONSTRAINT "AdoptionRequest_animalId_fkey" FOR
 
 -- AddForeignKey
 ALTER TABLE "CollectionPoint" ADD CONSTRAINT "CollectionPoint_settingsId_fkey" FOREIGN KEY ("settingsId") REFERENCES "DonationSettings"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-

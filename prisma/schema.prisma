@@ -36,7 +36,7 @@ model Animal {
   atualizadoEm    DateTime          @updatedAt
   adotado         Boolean           @default(false)
   adotadoEm       DateTime?
-  fivFelvStatus    FivFelvStatus?
+  fivFelvStatus   FivFelvStatus?
   oculto          Boolean           @default(false)
   requests        AdoptionRequest[]
   photos          Photo[]
@@ -79,13 +79,16 @@ model AdoptionRequest {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  password  String
-  role      Role     @default(EDITOR)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  name        String
+  password    String
+  approved   Boolean  @default(false)
+  institution String?
+  photoUrl    String?
+  role        Role     @default(USER)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Partner {
@@ -150,6 +153,7 @@ model CollectionPoint {
 enum Role {
   ADMIN
   EDITOR
+  USER
 }
 
 enum PixKeyType {

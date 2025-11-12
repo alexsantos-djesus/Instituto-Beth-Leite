@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Instagram, Mail, HeartHandshake, ArrowUp, PawPrint } from "lucide-react";
+import { Instagram, Mail, HeartHandshake, ArrowUp, PawPrint, ShieldCheck } from "lucide-react";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -12,7 +12,6 @@ export default function Footer() {
       className="mt-16 border-t border-yellow-400/50 bg-brand-primary text-neutral-900 relative"
     >
       <div aria-hidden className="ft-paws pointer-events-none absolute inset-0 z-0 opacity-10" />
-
       <style jsx>{`
         .ft-paws {
           background-image: url("/patinhas-footer.png");
@@ -151,6 +150,18 @@ export default function Footer() {
               <Instagram className="h-4 w-4" />
               <span className="hidden sm:inline">Instagram</span>
             </a>
+
+            {/* Botão Admin estilizado */}
+            <Link
+              href="/admin"
+              aria-label="Ir para o painel administrativo"
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-medium
+                         bg-gradient-to-r from-neutral-900 to-neutral-700 text-white
+                         shadow-sm ring-1 ring-black/10 hover:brightness-110 active:brightness-95 transition"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              <span className="hidden sm:inline">Admin</span>
+            </Link>
 
             <button
               type="button"

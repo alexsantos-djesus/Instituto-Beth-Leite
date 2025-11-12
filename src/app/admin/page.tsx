@@ -4,74 +4,72 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Dog, Users2, CalendarDays, HandHeart, PawPrint } from "lucide-react";
 
-function toast(msg: string, type: "success" | "error" = "success") {
-  const el = document.createElement("div");
-  el.textContent = msg;
-  el.className =
-    "fixed top-4 right-4 z-[9999] rounded-lg px-4 py-2 shadow-md text-white " +
-    (type === "success" ? "bg-emerald-600" : "bg-rose-600");
-  document.body.appendChild(el);
-  setTimeout(() => {
-    el.style.transition = "opacity .3s";
-    el.style.opacity = "0";
-    setTimeout(() => el.remove(), 300);
-  }, 2200);
-}
+type Me = {
+  id: number | string;
+  name: string;
+  email: string;
+  institution?: string | null;
+  photoUrl?: string | null;
+  role: "ADMIN" | "EDITOR";
+  approved: boolean; // <- usado para bloquear painel até aprovação
+};
 
 export default function AdminDashboard() {
-  const [authed, setAuthed] = useState(false);
-  const [pwd, setPwd] = useState("");
+  const [me, setMe] = useState<Me | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [profileOpen, setProfileOpen] = useState(false);
 
-  async function check() {
-    try {
-      const r = await fetch("/api/admin/requests", { headers: { Accept: "application/json" } });
-      const ok = r.ok && (r.headers.get("content-type") || "").includes("application/json");
-      setAuthed(ok);
-    } catch {
-      setAuthed(false);
-    }
+  async function loadMe() {
+    const r = await fetch("/api/auth/me", { headers: { Accept: "application/json" } });
+    if (!r.ok) throw new Error("unauthorized");
+    const { user } = await r.json();
+    setMe({
+      id: user.id,
+      name: user.name ?? "Usuário",
+      email: user.email,
+      institution: user.institution ?? "",
+      photoUrl: user.photoUrl ?? "",
+      role: user.role,
+      approved: Boolean(user.approved),
+    });
   }
+
   useEffect(() => {
-    check();
+    (async () => {
+      try {
+        await loadMe();
+      } catch {
+        setMe(null);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
-  async function login(e: React.FormEvent) {
-    e.preventDefault();
-    if (!pwd.trim()) return toast("Digite a senha.", "error");
-    const res = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password: pwd }),
-    });
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      return toast(data?.error || "Senha inválida", "error");
-    }
-    toast("Login realizado!", "success");
-    setTimeout(() => window.location.reload(), 400);
+  if (loading) {
+    return (
+      <Container className="py-10">
+        <div className="rounded-2xl bg-white p-6 shadow-card">
+          <p className="text-neutral-700">Carregando…</p>
+        </div>
+      </Container>
+    );
   }
 
-  if (!authed) {
+  if (!me) {
     return (
       <Container className="py-10">
         <h1 className="text-2xl font-extrabold mb-4">Área Administrativa</h1>
         <div className="bg-white p-6 rounded-2xl shadow-card max-w-md">
           <p className="text-neutral-700 mb-4">
-            Bem-vindo(a) ao painel do Instituto Beth Leite.
-            <br />
-            Entre com a senha do administrador para continuar.
+            Você precisa estar autenticado para acessar o painel.
           </p>
-          <form onSubmit={login}>
-            <label className="block text-sm font-medium mb-1">Senha</label>
-            <input
-              className="w-full border rounded-xl px-3 py-2 mb-3"
-              type="password"
-              value={pwd}
-              onChange={(e) => setPwd(e.target.value)}
-              placeholder="••••••••"
-            />
-            <button className="rounded-full bg-neutral-900 text-white px-4 py-2">Entrar</button>
-          </form>
+          <Link
+            href="/login"
+            className="inline-block rounded-full bg-neutral-900 text-white px-4 py-2"
+          >
+            Ir para o login
+          </Link>
           <p className="text-xs text-neutral-500 mt-3">
             Qualquer problema, fale com a gente pelo Instagram: @Debuguei
           </p>
@@ -80,28 +78,89 @@ export default function AdminDashboard() {
     );
   }
 
+  // BLOQUEIO: usuário logado porém não aprovado ainda
+  if (!me.approved && String(me.id) !== "1") {
+    return (
+      <Container className="py-10">
+        <div className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-amber-200/60 max-w-2xl">
+          <div className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-2.5 py-1 text-amber-900 text-sm ring-1 ring-amber-200">
+            <PawPrint className="h-4 w-4" />
+            <span>Cadastro pendente de aprovação</span>
+          </div>
+          <h1 className="mt-3 text-2xl font-semibold">Aguarde a autorização</h1>
+          <p className="text-neutral-700 mt-1">
+            Seu acesso ao painel será liberado após aprovação por um administrador. Caso demore, use
+            o WhatsApp indicado na tela de login para falar com o suporte.
+          </p>
+          <div className="mt-4 flex gap-2">
+            <Link
+              href="/"
+              className="rounded-full bg-neutral-900 text-white px-4 py-2 inline-block"
+            >
+              Voltar ao site
+            </Link>
+            <button
+              onClick={() => loadMe()}
+              className="rounded-full bg-neutral-100 px-4 py-2 ring-1 ring-neutral-200 hover:bg-neutral-200"
+            >
+              Verificar novamente
+            </button>
+          </div>
+        </div>
+      </Container>
+    );
+  }
+
   return (
     <Container className="py-10">
-      <div className="mb-6">
-        <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 ring-1 ring-emerald-200 px-2.5 py-1 text-emerald-900 text-sm">
-          <PawPrint className="h-4 w-4" />
-          <span>Bem-vindo(a) ao painel admin</span>
+      {/* Cabeçalho com badge e atalho de perfil */}
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 ring-1 ring-emerald-200 px-2.5 py-1 text-emerald-900 text-sm">
+            <PawPrint className="h-4 w-4" />
+            <span>
+              Bem-vindo(a), {me.name} {me.role === "ADMIN" ? "• Admin" : ""}
+            </span>
+          </div>
+          <h1 className="mt-3 text-3xl font-extrabold tracking-tight">Dashboard</h1>
+          <p className="text-neutral-700 mt-1">Gerencie os dados do site.</p>
         </div>
-        <h1 className="mt-3 text-3xl font-extrabold tracking-tight">Dashboard</h1>
-        <p className="text-neutral-700 mt-1">
-          Gerencie os dados do site. Em caso de dúvidas, fale com a equipe no Instagram.
-        </p>
+
+        {/* Perfil (avatar + nome) clicável -> abre modal */}
+        <button
+          onClick={() => setProfileOpen(true)}
+          className="group rounded-2xl bg-white p-3 shadow-card ring-1 ring-neutral-200/60 hover:shadow-md transition flex items-center gap-3"
+          aria-label="Abrir perfil"
+          title="Abrir perfil"
+        >
+          <img
+            src={me.photoUrl || "/avatar-placeholder.png"}
+            className="h-10 w-10 rounded-full object-cover ring-1 ring-neutral-200"
+            alt="Foto do perfil"
+          />
+          <div className="text-left">
+            <div className="text-sm font-semibold leading-tight group-hover:underline">
+              {me.name}
+            </div>
+            <div className="text-xs text-neutral-500">{me.email}</div>
+          </div>
+        </button>
       </div>
 
+      {/* Cards principais */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <DashCard href="/admin/animals" title="Animais" desc="Cadastrar, editar e gerenciar fotos.">
           <Dog className="h-5 w-5" />
         </DashCard>
-        <DashCard
-          href="/admin/partners"
-          title="Parceiros"
-          desc="Logos, links e ordem de exibição."
-        >
+
+        {/* Usuários: só aparece para ADMIN ou usuário 1 */}
+        {(me.role === "ADMIN" || String(me.id) === "1") && (
+          <DashCard href="/admin/usuarios" title="Usuários" desc="Gerenciar perfis e permissões.">
+            <Users2 className="h-5 w-5" />
+          </DashCard>
+        )}
+
+        <DashCard href="/admin/partners" title="Parceiros" desc="Logos, links e ordem de exibição.">
           <Users2 className="h-5 w-5" />
         </DashCard>
         <DashCard href="/admin/events" title="Eventos" desc="Feiras e ações do instituto.">
@@ -118,9 +177,23 @@ export default function AdminDashboard() {
           <PawPrint className="h-5 w-5" />
         </DashCard>
       </div>
+
+      {/* Modal de Perfil (editar) */}
+      {profileOpen && me && (
+        <ProfileModal
+          me={me}
+          onClose={() => setProfileOpen(false)}
+          onSaved={async () => {
+            await loadMe();
+            setProfileOpen(false);
+          }}
+        />
+      )}
     </Container>
   );
 }
+
+/* -------------------- Components -------------------- */
 
 function DashCard({
   href,
@@ -145,5 +218,145 @@ function DashCard({
       <p className="mt-2 text-neutral-700">{desc}</p>
       <div className="mt-3 text-sm text-neutral-500 group-hover:text-neutral-700">Abrir →</div>
     </Link>
+  );
+}
+
+function ProfileModal({
+  me,
+  onClose,
+  onSaved,
+}: {
+  me: {
+    id: number | string;
+    name: string;
+    email: string;
+    institution?: string | null;
+    photoUrl?: string | null;
+  };
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [name, setName] = useState(me.name || "");
+  const [email, setEmail] = useState(me.email || "");
+  const [institution, setInstitution] = useState(me.institution || "");
+  const [password, setPassword] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(me.photoUrl || null);
+  const [saving, setSaving] = useState(false);
+
+  function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0] || null;
+    setFile(f);
+    setPreview(f ? URL.createObjectURL(f) : preview);
+  }
+
+  async function save(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    const fd = new FormData();
+    fd.append("name", name);
+    fd.append("email", email);
+    fd.append("institution", institution);
+    if (password) fd.append("password", password);
+    if (file) fd.append("photo", file);
+
+    const r = await fetch(`/api/admin/users/${me.id}`, { method: "PATCH", body: fd });
+    setSaving(false);
+    if (!r.ok) {
+      const d = await r.json().catch(() => ({}));
+      alert(d.error || "Erro ao salvar perfil");
+      return;
+    }
+    alert("Perfil atualizado!");
+    onSaved();
+  }
+
+  return (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 p-4">
+      <div className="w-full max-w-xl rounded-2xl bg-white p-5 shadow-xl ring-1 ring-neutral-200">
+        <div className="mb-4 flex items-start justify-between">
+          <div>
+            <h2 className="text-lg font-semibold leading-none">Perfil</h2>
+            <p className="text-sm text-neutral-600">Atualize sua foto, nome, login e senha.</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-full px-3 py-1.5 text-sm bg-neutral-100 hover:bg-neutral-200"
+          >
+            Fechar
+          </button>
+        </div>
+
+        <form onSubmit={save} className="space-y-4">
+          <div className="flex items-center gap-4">
+            <img
+              src={preview || "/avatar-placeholder.png"}
+              className="h-16 w-16 rounded-full object-cover ring-1 ring-neutral-200"
+              alt="Foto do perfil"
+            />
+            <label className="inline-flex items-center gap-2 px-3 py-2 border rounded-xl cursor-pointer text-sm">
+              <span>Alterar foto</span>
+              <input type="file" accept="image/*" className="hidden" onChange={onFile} />
+            </label>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium mb-1">Nome</label>
+              <input
+                className="w-full border rounded-xl px-3 py-2"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Login (e-mail)</label>
+              <input
+                className="w-full border rounded-xl px-3 py-2"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium mb-1">Instituição</label>
+              <input
+                className="w-full border rounded-xl px-3 py-2"
+                value={institution || ""}
+                onChange={(e) => setInstitution(e.target.value)}
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium mb-1">Nova senha (opcional)</label>
+              <input
+                type="password"
+                className="w-full border rounded-xl px-3 py-2"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Deixe em branco para manter a atual"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-full bg-neutral-100 px-4 py-2 hover:bg-neutral-200"
+            >
+              Cancelar
+            </button>
+            <button
+              disabled={saving}
+              className="rounded-full bg-neutral-900 text-white px-5 py-2 disabled:opacity-60"
+            >
+              {saving ? "Salvando…" : "Salvar"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
