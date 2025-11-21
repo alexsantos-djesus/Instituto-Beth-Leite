@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 
-const WHATS_LINK = "https://wa.me/5599999999999"; // troque pelo seu número
-const WHATS_LABEL = "(99) 99999-9999"; // troque pelo seu número
+const WHATS_LINK = "https://wa.me/555199262793931";
+const WHATS_LABEL = "(51) 99279-3931";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
