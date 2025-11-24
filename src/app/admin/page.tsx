@@ -246,29 +246,87 @@ function ProfileModal({
 
   function onFile(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] || null;
+    if (f) {
+      // validação básica (opcional)
+      if (!f.type.startsWith("image/")) {
+        alert("Envie uma imagem válida.");
+        return;
+      }
+      if (f.size > 5 * 1024 * 1024) {
+        alert("Arquivo muito grande. Máx 5MB.");
+        return;
+      }
+    }
     setFile(f);
-    setPreview(f ? URL.createObjectURL(f) : preview);
+    setPreview(f ? URL.createObjectURL(f) : me.photoUrl || null);
+  }
+
+  // upload direto do client para o Cloudinary (unsigned preset)
+  async function uploadToCloudinary(file: File) {
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_PRESET!);
+
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+      { method: "POST", body: fd }
+    );
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Cloudinary upload failed: ${res.status} ${text}`);
+    }
+
+    const data = await res.json();
+    return data.secure_url as string;
   }
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const fd = new FormData();
-    fd.append("name", name);
-    fd.append("email", email);
-    fd.append("institution", institution);
-    if (password) fd.append("password", password);
-    if (file) fd.append("photo", file);
 
-    const r = await fetch(`/api/admin/users/${me.id}`, { method: "PATCH", body: fd });
-    setSaving(false);
-    if (!r.ok) {
-      const d = await r.json().catch(() => ({}));
-      alert(d.error || "Erro ao salvar perfil");
-      return;
+    try {
+      let finalPhotoUrl = me.photoUrl || null;
+
+      // 1) se houver novo arquivo, envia para Cloudinary
+      if (file) {
+        finalPhotoUrl = await uploadToCloudinary(file);
+        // atualiza preview com a url real
+        setPreview(finalPhotoUrl);
+      }
+
+      // 2) envia somente JSON ao backend (App Router)
+      const payload: any = {
+        name,
+        email,
+        institution,
+      };
+      if (password) payload.password = password;
+      if (finalPhotoUrl) payload.photoUrl = finalPhotoUrl;
+
+      const r = await fetch(`/api/admin/users/${me.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      setSaving(false);
+
+      if (!r.ok) {
+        const d = await r
+          .json()
+          .catch(async () => ({ error: await r.text().catch(() => "unknown") }));
+        alert(d.error || "Erro ao salvar perfil");
+        return;
+      }
+
+      alert("Perfil atualizado!");
+      onSaved();
+    } catch (err: any) {
+      console.error("save error:", err);
+      setSaving(false);
+      alert(err?.message || "Erro ao salvar perfil");
     }
-    alert("Perfil atualizado!");
-    onSaved();
   }
 
   return (
