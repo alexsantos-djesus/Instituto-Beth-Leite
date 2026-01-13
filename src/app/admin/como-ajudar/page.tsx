@@ -51,7 +51,7 @@ export default function DonationsAdmin() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const body = Object.fromEntries(fd.entries());
-    const r = await fetch("/api/admin/donations", {
+    const r = await fetch("/api/donations", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
