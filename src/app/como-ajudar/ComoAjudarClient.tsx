@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 import Link from "next/link";
 import Container from "@/components/Container";
@@ -237,6 +238,22 @@ export default function ComoAjudarClient() {
                     </li>
                   )}
                 </ul>
+                
+                <div className="mt-4 flex flex-col items-center gap-2">
+                  <span className="text-xs font-medium text-neutral-600">
+                    Escaneie para doar via Pix
+                  </span>
+
+                  <div className="rounded-xl bg-white p-3 shadow-sm border border-neutral-200">
+                    <Image
+                      src="/qrcode-pix.png"
+                      alt="QR Code Pix Instituto Beth Leite"
+                      width={180}
+                      height={180}
+                      priority
+                    />
+                  </div>
+                </div>
 
                 <div className="mt-3 flex flex-wrap gap-2">
                   <motion.a
