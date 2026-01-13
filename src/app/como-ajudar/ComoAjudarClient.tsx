@@ -238,7 +238,7 @@ export default function ComoAjudarClient() {
                     </li>
                   )}
                 </ul>
-                
+
                 <div className="mt-4 flex flex-col items-center gap-2">
                   <span className="text-xs font-medium text-neutral-600">
                     Escaneie para doar via Pix
@@ -246,7 +246,7 @@ export default function ComoAjudarClient() {
 
                   <div className="rounded-xl bg-white p-3 shadow-sm border border-neutral-200">
                     <Image
-                      src="/qrcode-pix.png"
+                      src="/qrcode-pix.jpeg"
                       alt="QR Code Pix Instituto Beth Leite"
                       width={180}
                       height={180}
