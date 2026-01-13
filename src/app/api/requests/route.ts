@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { sendAdoptionRequestNotification } from "@/lib/mail";
 
 const onlyDigits = (s: string) => String(s || "").replace(/\D/g, "");
 
@@ -108,8 +109,9 @@ export async function POST(req: Request) {
 
     const exists = await prisma.animal.findUnique({
       where: { id: data.animalId },
-      select: { id: true, adotado: true },
+      select: { id: true, adotado: true, nome: true },
     });
+
     if (!exists || exists.adotado) {
       return NextResponse.json({ error: "Animal indisponível." }, { status: 404 });
     }
@@ -126,20 +128,36 @@ export async function POST(req: Request) {
         endereco: data.endereco,
         numero: data.numero,
         bairro: data.bairro,
-
         mensagem: data.mensagem,
         perfil: data.perfil,
+        status: "NOVO",
       },
     });
+
+    const admins = await prisma.user.findMany({
+      where: {
+        approved: true,
+        OR: [{ role: "ADMIN" }, { id: 1 }],
+      },
+      select: { email: true },
+    });
+
+    const adminEmails = admins.map((a) => a.email);
+
+    await sendAdoptionRequestNotification(
+      adminEmails,
+      exists.nome,
+      created.nome, 
+      created.email 
+    );
 
     return NextResponse.json(created, { status: 201 });
   } catch (err: any) {
     if (err?.issues) {
-      return NextResponse.json(
-        { error: "Dados inválidos", details: err.issues },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Dados inválidos", details: err.issues }, { status: 400 });
     }
+
+    console.error("create adoption request error:", err);
     return NextResponse.json({ error: "Erro ao criar solicitação" }, { status: 500 });
   }
 }

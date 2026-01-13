@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { sendRequestStatusEmail } from "@/lib/mail";
 
 const UpdateStatusSchema = z.object({
   id: z.number().int().positive(),
@@ -20,10 +21,27 @@ export async function PUT(req: Request) {
     const json = await req.json();
     const data = UpdateStatusSchema.parse({ ...json, id: Number(json?.id) });
 
+    const before = await prisma.adoptionRequest.findUnique({
+      where: { id: data.id },
+      include: { animal: { select: { nome: true } } },
+    });
+
+    if (!before) {
+      return NextResponse.json({ error: "Solicitação não encontrada" }, { status: 404 });
+    }
+
     const updated = await prisma.adoptionRequest.update({
       where: { id: data.id },
       data: { status: data.status },
     });
+  
+    if (
+      before.status !== data.status &&
+      (data.status === "CONTATADO" || data.status === "NAO_ELEGIVEL")
+    ) {
+      await sendRequestStatusEmail(before.email, before.nome, before.animal.nome, data.status);
+    }
+
     return NextResponse.json(updated);
   } catch (err: any) {
     if (err?.issues) {

@@ -82,3 +82,103 @@ export async function sendUserApprovedEmail(to: string, userName: string) {
     `,
   });
 }
+
+export async function sendAdoptionRequestNotification(
+  to: string[],
+  animalName: string,
+  applicantName: string,
+  applicantEmail: string
+) {
+  if (to.length === 0) return;
+
+  await transporter.sendMail({
+    from: `"Instituto Beth Leite" <${process.env.SMTP_USER}>`,
+    to,
+    subject: "Nova solicitação de adoção recebida",
+    html: `
+      <p>Uma nova solicitação de adoção foi enviada.</p>
+
+      <ul>
+        <li><strong>Animal:</strong> ${animalName}</li>
+        <li><strong>Nome:</strong> ${applicantName}</li>
+        <li><strong>E-mail:</strong> ${applicantEmail}</li>
+      </ul>
+
+      <p>
+        <a href="${process.env.APP_URL}/admin/requests">
+          Abrir painel de solicitações
+        </a>
+      </p>
+    `,
+  });
+}
+
+export async function sendRequestStatusEmail(
+  to: string,
+  applicantName: string,
+  animalName: string,
+  status: "CONTATADO" | "NAO_ELEGIVEL"
+) {
+  const subject =
+    status === "CONTATADO"
+      ? "Sua solicitação de adoção foi analisada"
+      : "Atualização sobre sua solicitação de adoção";
+
+  const message =
+    status === "CONTATADO"
+      ? `
+        <p>Olá, ${applicantName}!</p>
+        <p>Sua solicitação para adoção de <strong>${animalName}</strong> foi analisada.</p>
+        <p>Nossa equipe entrará em contato com você em breve.</p>
+      `
+      : `
+        <p>Olá, ${applicantName}!</p>
+        <p>
+          Agradecemos seu interesse em adotar <strong>${animalName}</strong>,
+          porém neste momento sua solicitação não foi aprovada.
+        </p>
+        <p>Continue acompanhando, outros animais podem precisar de você 💚</p>
+      `;
+
+  await transporter.sendMail({
+    from: `"Instituto Beth Leite" <${process.env.SMTP_USER}>`,
+    to,
+    subject,
+    html: `
+      ${message}
+      <p style="margin-top:16px">
+        <a href="${process.env.APP_URL}/animais">
+          Ver outros animais
+        </a>
+      </p>
+    `,
+  });
+}
+
+export async function sendRequestApprovedEmail(
+  to: string,
+  applicantName: string,
+  animalName: string
+) {
+  await transporter.sendMail({
+    from: `"Instituto Beth Leite" <${process.env.SMTP_USER}>`,
+    to,
+    subject: "Adoção aprovada 🎉",
+    html: `
+      <p>Olá, ${applicantName}!</p>
+
+      <p>
+        Temos uma ótima notícia! Sua solicitação para adoção de
+        <strong>${animalName}</strong> foi <strong>APROVADA</strong>.
+      </p>
+
+      <p>
+        Em breve entraremos em contato para os próximos passos.
+      </p>
+
+      <p style="margin-top:16px">
+        <strong>Obrigado por adotar 💚</strong>
+      </p>
+    `,
+  });
+}

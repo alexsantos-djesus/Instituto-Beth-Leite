@@ -31,7 +31,7 @@ function timeAgo(iso: string) {
 
 type Req = {
   id: number;
-  status: "NOVO" | "CONTATADO" | "NAO_ELEGIVEL";
+  status: "NOVO" | "CONTATADO" | "NAO_ELEGIVEL" | "APROVADO";
   nome: string;
   email: string;
   telefone: string;
@@ -52,12 +52,16 @@ const statusLabel: Record<StatusKey, string> = {
   NOVO: "novo",
   CONTATADO: "contatado",
   NAO_ELEGIVEL: "não elegível",
+  APROVADO: "aprovado",
 };
+
 const statusClass: Record<StatusKey, string> = {
   NOVO: "bg-amber-50 text-amber-700 ring-amber-200",
   CONTATADO: "bg-emerald-50 text-emerald-700 ring-emerald-200",
   NAO_ELEGIVEL: "bg-neutral-100 text-neutral-700 ring-neutral-300",
+  APROVADO: "bg-emerald-600 text-white ring-emerald-700",
 };
+
 function StatusBadge({ s }: { s: StatusKey }) {
   return (
     <span
@@ -359,6 +363,7 @@ export default function AdminSolicitacoes() {
                     <span className="text-neutral-400">•</span>
                     <StatusBadge s={openReq.status} />
                   </div>
+
                   <div className="text-xs text-neutral-500">
                     enviada há {timeAgo(openReq.criadoEm)} —{" "}
                     {new Date(openReq.criadoEm).toLocaleString()}
@@ -375,6 +380,23 @@ export default function AdminSolicitacoes() {
                     <option value="CONTATADO">contatado</option>
                     <option value="NAO_ELEGIVEL">não elegível</option>
                   </select>
+
+                  {openReq.status !== "APROVADO" && (
+                    <button
+                      onClick={() =>
+                        fetch(`/api/admin/requests/${openReq.id}/approve`, { method: "POST" }).then(
+                          () => {
+                            setOpenReq(null);
+                            load();
+                          }
+                        )
+                      }
+                      className="rounded-full bg-emerald-600 text-white px-4 py-2 text-sm"
+                    >
+                      Aprovar adoção
+                    </button>
+                  )}
+
                   <button
                     className="inline-grid place-items-center h-9 w-9 rounded-full hover:bg-neutral-100"
                     onClick={() => setOpenReq(null)}
