@@ -1,0 +1,206 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import Container from "@/components/Container";
+import {
+  HeartHandshake,
+  PiggyBank,
+  CreditCard,
+  PawPrint,
+  Users,
+  Home,
+  Gift,
+  MapPin,
+  Phone,
+  Mail,
+  Instagram,
+  CalendarDays,
+  Truck,
+} from "lucide-react";
+import { motion, type Variants } from "framer-motion";
+
+type DonationSettings = {
+  pixKey?: string | null;
+  pixKeyType?: string | null;
+  bankName?: string | null;
+  bankAgency?: string | null;
+  bankAccount?: string | null;
+  bankHolder?: string | null;
+  recurringLink?: string | null;
+  itemsWanted?: string | null;
+  collectionPoints?: {
+    id: string;
+    name: string;
+    address: string;
+    hours?: string | null;
+    phone?: string | null;
+  }[];
+};
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0 },
+};
+
+const list: Variants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.15 } },
+};
+
+const item: Variants = {
+  hidden: { opacity: 0, y: 22, scale: 0.97 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: "spring", stiffness: 380, damping: 22 },
+  },
+};
+
+export default function ComoAjudarClient() {
+  const [data, setData] = useState<DonationSettings | null>(null);
+
+  useEffect(() => {
+    fetch("/api/donations")
+      .then((r) => r.json())
+      .then(setData)
+      .catch(() => setData(null));
+  }, []);
+
+  return (
+    <Container>
+      <div className="grid lg:grid-cols-3 gap-6 mt-10">
+        {/* DOE AGORA */}
+        <motion.section
+          variants={fadeUp}
+          initial="hidden"
+          animate="show"
+          className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-card"
+        >
+          <div className="flex items-center gap-3">
+            <PiggyBank className="h-5 w-5 text-neutral-700" />
+            <h2 className="text-xl font-bold">Doe agora</h2>
+          </div>
+
+          <div className="mt-4 grid sm:grid-cols-2 gap-4">
+            {/* PIX / BANCO */}
+            <div className="rounded-xl border border-neutral-200 p-4 bg-neutral-50">
+              <div className="flex items-center gap-2 font-semibold">
+                <CreditCard className="h-4 w-4" />
+                Pix / Transferência
+              </div>
+
+              <ul className="mt-2 text-sm text-neutral-700 space-y-1">
+                <li>
+                  <span className="font-medium">Chave PIX:</span>{" "}
+                  <span className="select-all">{data?.pixKey ?? "—"}</span>
+                </li>
+
+                {data?.pixKeyType && (
+                  <li>
+                    <span className="font-medium">Tipo:</span> {data.pixKeyType}
+                  </li>
+                )}
+
+                <li>
+                  <span className="font-medium">Banco:</span> {data?.bankName ?? "—"}
+                </li>
+
+                <li>
+                  <span className="font-medium">Agência:</span> {data?.bankAgency ?? "—"} |{" "}
+                  <span className="font-medium">Conta:</span> {data?.bankAccount ?? "—"}
+                </li>
+
+                {data?.bankHolder && (
+                  <li>
+                    <span className="font-medium">Titular:</span> {data.bankHolder}
+                  </li>
+                )}
+              </ul>
+            </div>
+
+            {/* ITENS */}
+            <div className="rounded-xl border border-neutral-200 p-4 bg-neutral-50">
+              <div className="flex items-center gap-2 font-semibold">
+                <Gift className="h-4 w-4" />
+                Itens que mais precisamos
+              </div>
+
+              <ul className="mt-2 text-sm text-neutral-700 space-y-1">
+                {(data?.itemsWanted ?? "")
+                  .split("\n")
+                  .filter(Boolean)
+                  .map((item) => (
+                    <li key={item}>• {item}</li>
+                  ))}
+              </ul>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* CONTATO */}
+        <motion.aside
+          variants={fadeUp}
+          initial="hidden"
+          animate="show"
+          className="bg-white rounded-2xl p-6 shadow-card"
+        >
+          <h3 className="font-bold mb-3">Fale conosco</h3>
+
+          <ul className="space-y-2 text-sm">
+            <li className="flex items-center gap-2">
+              <Phone className="h-4 w-4" />
+              <a href="https://wa.me/5551992545499" target="_blank">
+                (51) 99254-5499
+              </a>
+            </li>
+
+            <li className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              <a href="mailto:contato@institutobethleite.com.br">
+                contato@institutobethleite.com.br
+              </a>
+            </li>
+
+            <li className="flex items-center gap-2">
+              <Instagram className="h-4 w-4" />
+              <a href="https://instagram.com/institutobethleite" target="_blank">
+                @institutobethleite
+              </a>
+            </li>
+          </ul>
+        </motion.aside>
+      </div>
+
+      {/* PONTOS DE COLETA */}
+      {data?.collectionPoints?.length ? (
+        <motion.section
+          variants={fadeUp}
+          initial="hidden"
+          animate="show"
+          className="mt-10 bg-white rounded-2xl p-6 shadow-card"
+        >
+          <h3 className="font-bold mb-3 flex items-center gap-2">
+            <MapPin className="h-5 w-5" />
+            Pontos de coleta
+          </h3>
+
+          <ul className="grid sm:grid-cols-2 gap-3 text-sm">
+            {data.collectionPoints.map((p) => (
+              <li key={p.id} className="border rounded-xl p-3">
+                <strong>{p.name}</strong>
+                <div>{p.address}</div>
+                {(p.hours || p.phone) && (
+                  <div className="text-neutral-600 text-xs">
+                    {[p.hours, p.phone].filter(Boolean).join(" • ")}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </motion.section>
+      ) : null}
+    </Container>
+  );
+}
