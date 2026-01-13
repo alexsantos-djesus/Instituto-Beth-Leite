@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser, canApprove } from "@/lib/authz";
-import { sendUserApprovedEmail } from "@/lib/mail";
 
 export async function POST(_: Request, { params }: { params: { id: string } }) {
   const me = await getSessionUser();
@@ -13,35 +12,27 @@ export async function POST(_: Request, { params }: { params: { id: string } }) {
   if (Number.isNaN(targetId)) {
     return NextResponse.json({ error: "invalid id" }, { status: 400 });
   }
-  const existing = await prisma.user.findUnique({
+
+  const user = await prisma.user.findUnique({
     where: { id: targetId },
-    select: {
-      id: true,
-      approved: true,
-      name: true,
-      email: true,
-      role: true,
-    },
+    select: { approved: true },
   });
 
-  if (!existing) {
+  if (!user) {
     return NextResponse.json({ error: "user not found" }, { status: 404 });
   }
-  if (existing.approved) {
-    return NextResponse.json({ ok: true, user: existing });
+
+  if (user.approved) {
+    return NextResponse.json({ error: "cannot reject approved user" }, { status: 400 });
   }
-  const user = await prisma.user.update({
+
+  await prisma.user.update({
     where: { id: targetId },
-    data: { approved: true },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      approved: true,
+    data: {
+      approved: false,
+      active: false, // 👈 desativa
     },
   });
-  await sendUserApprovedEmail(user.email, user.name);
 
-  return NextResponse.json({ ok: true, user });
+  return NextResponse.json({ ok: true });
 }

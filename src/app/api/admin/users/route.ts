@@ -7,7 +7,9 @@ export async function GET() {
   if (!canSeeUsers(me)) return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
   const users = await prisma.user.findMany({
-    orderBy: [{ approved: "asc" }, { createdAt: "asc" }],
+    where: {
+      active: true, // 👈 ESCONDE DESATIVADOS
+    },
     select: {
       id: true,
       name: true,
@@ -16,7 +18,10 @@ export async function GET() {
       photoUrl: true,
       role: true,
       approved: true,
-      createdAt: true,
+      active: true,
+    },
+    orderBy: {
+      createdAt: "asc",
     },
   });
   return NextResponse.json({ users });

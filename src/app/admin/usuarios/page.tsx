@@ -12,6 +12,7 @@ type User = {
   photoUrl?: string | null;
   role: Role;
   approved: boolean;
+  active: boolean;
 };
 
 export default function UsersAdminPage() {
@@ -139,12 +140,28 @@ export default function UsersAdminPage() {
               </button>
 
               {(me?.role === "ADMIN" || me?.id === 1) && !u.approved && (
-                <button
-                  className="rounded-full bg-emerald-600 text-white px-3 py-1"
-                  onClick={() => approve(u)}
-                >
-                  Aprovar
-                </button>
+                <>
+                  <button
+                    className="rounded-full bg-emerald-600 text-white px-3 py-1"
+                    onClick={() => approve(u)}
+                  >
+                    Aprovar
+                  </button>
+
+                  <button
+                    className="rounded-full bg-red-600 text-white px-3 py-1"
+                    onClick={async () => {
+                      if (!confirm("Recusar este usuário?")) return;
+                      const r = await fetch(`/api/admin/users/${u.id}/reject`, {
+                        method: "POST",
+                      });
+                      if (r.ok) load();
+                      else alert("Erro ao recusar");
+                    }}
+                  >
+                    Recusar
+                  </button>
+                </>
               )}
 
               {me?.id === 1 && u.id !== 1 && (
@@ -153,6 +170,21 @@ export default function UsersAdminPage() {
                   onClick={() => toggleAdmin(u)}
                 >
                   {u.role === "ADMIN" ? "Remover admin" : "Dar admin"}
+                </button>
+              )}
+              {u.approved && u.active && me?.id === 1 && (
+                <button
+                  className="rounded-full bg-red-700 text-white px-3 py-1"
+                  onClick={async () => {
+                    if (!confirm("Desativar este usuário?")) return;
+                    const r = await fetch(`/api/admin/users/${u.id}/deactivate`, {
+                      method: "POST",
+                    });
+                    if (r.ok) load();
+                    else alert("Erro ao desativar");
+                  }}
+                >
+                  Desativar
                 </button>
               )}
             </div>
