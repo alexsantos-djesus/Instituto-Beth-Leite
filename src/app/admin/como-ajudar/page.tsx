@@ -112,7 +112,10 @@ export default function DonationsAdmin() {
               <span className="text-sm">Tipo da chave</span>
               <select
                 name="pixKeyType"
-                defaultValue={data?.pixKeyType ?? ""}
+                value={data?.pixKeyType ?? ""}
+                onChange={(e) =>
+                  setData((prev) => (prev ? { ...prev, pixKeyType: e.target.value as any } : prev))
+                }
                 className="w-full border rounded-xl px-3 py-2"
               >
                 <option value="">—</option>
