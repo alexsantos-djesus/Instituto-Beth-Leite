@@ -25,6 +25,7 @@ export default function NewAnimalPage() {
     sexo: "FEMEA",
     porte: "PEQUENO",
     idadeMeses: 0,
+    idadeAnos: 0,
     vacinado: false,
     castrado: false,
     raca: "",
@@ -42,6 +43,9 @@ export default function NewAnimalPage() {
 
   const addFotos = (arr: Photo[]) =>
     setFotos((prev) => [...prev, ...arr.map((p) => ({ ...p, alt: p.alt || form.nome }))]);
+  const removeFoto = (index: number) => {
+    setFotos((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const canAutosetSlug = useMemo(
     () => form.slug.trim() === "" || form.slug === slugify(form.nome),
@@ -55,10 +59,11 @@ export default function NewAnimalPage() {
     e.preventDefault();
     setSaving(true);
 
+      const idadeTotalMeses = Number(form.idadeAnos || 0) * 12 + Number(form.idadeMeses || 0);
     const payload: any = {
       ...form,
       slug: slugify(canAutosetSlug ? form.nome : form.slug),
-      idadeMeses: Number(form.idadeMeses || 0),
+      idadeMeses: idadeTotalMeses,
       raca: form.raca.trim() || null,
       temperamento: form.temperamento.trim() || null,
       historiaResgate: form.historiaResgate.trim() || null,
@@ -192,16 +197,32 @@ export default function NewAnimalPage() {
             </select>
           </label>
 
-          <label className="block">
-            <span className="text-sm">Idade (meses)</span>
-            <input
-              type="number"
-              min={0}
-              className="w-full border rounded-xl px-3 py-2"
-              value={form.idadeMeses}
-              onChange={(e) => onChange("idadeMeses", Number(e.target.value))}
-            />
-          </label>
+          <div className="grid grid-cols-2 gap-4">
+            <label className="block">
+              <span className="text-sm">Idade (anos)</span>
+              <input
+                type="number"
+                min={0}
+                className="w-full border rounded-xl px-3 py-2"
+                placeholder="Ex: 1"
+                value={form.idadeAnos}
+                onChange={(e) => onChange("idadeAnos", Number(e.target.value))}
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm">Meses</span>
+              <input
+                type="number"
+                min={0}
+                max={11}
+                className="w-full border rounded-xl px-3 py-2"
+                placeholder="Ex: 6"
+                value={form.idadeMeses}
+                onChange={(e) => onChange("idadeMeses", Number(e.target.value))}
+              />
+            </label>
+          </div>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
@@ -300,6 +321,8 @@ export default function NewAnimalPage() {
         </div>
 
         <div className="space-y-2">
+          <p className="text-xs text-neutral-500">É possível escolher no máximo 4 fotos por vez.</p>
+
           <CloudinaryUploader
             label="Enviar fotos"
             onAdd={(urls) => addFotos(urls.map((u) => ({ url: u })))}
@@ -308,9 +331,23 @@ export default function NewAnimalPage() {
             {fotos.map((f, i) => (
               <div
                 key={`${f.url}-${i}`}
-                className="relative w-24 h-24 rounded-lg overflow-hidden bg-neutral-100"
+                className="relative w-24 h-24 rounded-lg overflow-hidden bg-neutral-100 group"
               >
                 <img src={f.url} alt={f.alt || form.nome} className="h-full w-full object-cover" />
+
+                {/* Botão remover */}
+                <button
+                  type="button"
+                  onClick={() => removeFoto(i)}
+                  className="absolute top-1 right-1 z-10 hidden group-hover:flex items-center justify-center
+                 w-5 h-5 rounded-full bg-black/70 text-white text-xs hover:bg-black"
+                  aria-label="Remover foto"
+                  title="Remover foto"
+                >
+                  ×
+                </button>
+
+                {/* Indicador de capa */}
                 {i === 0 && (
                   <span className="absolute bottom-1 left-1 text-[10px] bg-black/70 text-white px-1.5 rounded">
                     capa

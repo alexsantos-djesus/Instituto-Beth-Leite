@@ -21,6 +21,8 @@ type Animal = {
   sexo: "MACHO" | "FEMEA";
   porte: "PEQUENO" | "MEDIO" | "GRANDE";
   idadeMeses: number;
+  idadeAnos?: number;
+  idadeMesesRestantes?: number;
   vacinado: boolean;
   castrado: boolean;
   raca?: string | null;
@@ -44,7 +46,15 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
     (async () => {
       const r = await fetch(`/api/admin/animals/${id}`);
       const a = await r.json();
-      setData(a);
+
+      const anos = Math.floor((a.idadeMeses ?? 0) / 12);
+      const meses = (a.idadeMeses ?? 0) % 12;
+
+      setData({
+        ...a,
+        idadeAnos: anos,
+        idadeMesesRestantes: meses,
+      });
     })();
   }, [id]);
 
@@ -56,10 +66,13 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
     if (!data) return;
     setSaving(true);
 
+    const idadeTotalMeses =
+      Number(data.idadeAnos || 0) * 12 + Number(data.idadeMesesRestantes || 0);
+
     const payload = {
       ...data,
       slug: slugify(data.slug || data.nome),
-      idadeMeses: Number(data.idadeMeses || 0),
+      idadeMeses: idadeTotalMeses,
       raca: data.raca?.trim() || null,
       temperamento: data.temperamento?.trim() || null,
       historiaResgate: data.historiaResgate?.trim() || null,
@@ -173,16 +186,32 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
               </select>
             </label>
 
-            <label className="block">
-              <span className="text-sm">Idade (meses)</span>
-              <input
-                type="number"
-                min={0}
-                className="w-full mt-1 border rounded-xl px-3 py-2"
-                value={data.idadeMeses}
-                onChange={(e) => updateField("idadeMeses", Number(e.target.value))}
-              />
-            </label>
+            <div className="grid grid-cols-2 gap-4">
+              <label className="block">
+                <span className="text-sm">Idade (anos)</span>
+                <input
+                  type="number"
+                  min={0}
+                  className="w-full mt-1 border rounded-xl px-3 py-2"
+                  placeholder="Ex: 1"
+                  value={data.idadeAnos ?? 0}
+                  onChange={(e) => updateField("idadeAnos", Number(e.target.value))}
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm">Meses</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={11}
+                  className="w-full mt-1 border rounded-xl px-3 py-2"
+                  placeholder="Ex: 6"
+                  value={data.idadeMesesRestantes ?? 0}
+                  onChange={(e) => updateField("idadeMesesRestantes", Number(e.target.value))}
+                />
+              </label>
+            </div>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
@@ -284,20 +313,32 @@ export default function EditAnimal({ params }: { params: { id: string } }) {
         </div>
 
         <div className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-neutral-200/60">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-bold">Fotos</h3>
+          <div className="mb-2 space-y-2">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold">Fotos</h3>
+            </div>
+
             <CloudinaryUploader
-              label="Enviar foto"
-              onUploaded={async (url: string) => {
-                await fetch(`/api/admin/animals/${id}/photos`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ url, alt: data.nome }),
-                });
+              label="Enviar fotos"
+              onAdd={async (urls: string[]) => {
+                await Promise.all(
+                  urls.map((url) =>
+                    fetch(`/api/admin/animals/${id}/photos`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ url, alt: data.nome }),
+                    })
+                  )
+                );
+
                 const fresh = await fetch(`/api/admin/animals/${id}`).then((r) => r.json());
                 setData((prev) => (prev ? { ...prev, photos: fresh.photos ?? [] } : fresh));
               }}
             />
+
+            <p className="text-xs text-neutral-500">
+              É possível escolher no máximo 4 fotos por vez.
+            </p>
           </div>
 
           <ul className="grid grid-cols-3 gap-3">

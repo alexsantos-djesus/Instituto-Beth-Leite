@@ -20,7 +20,12 @@ export default function CloudinaryUploader({
     input.multiple = !!onAdd || multiple;
 
     input.onchange = async () => {
-      const files = input.files ? Array.from(input.files) : [];
+      const allFiles = input.files ? Array.from(input.files) : [];
+      if (allFiles.length > 4) {
+        alert("Você pode enviar no máximo 4 fotos por vez.");
+        return;
+      }
+      const files = allFiles;
       if (!files.length) return;
       setBusy(true);
       try {

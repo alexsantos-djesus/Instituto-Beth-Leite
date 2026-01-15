@@ -90,23 +90,44 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
 
         <div className="container max-w-6xl">
           <div className="relative py-12 sm:py-14 md:py-20">
+            {/* ===== DESKTOP: imagem + nome SOBRE a imagem ===== */}
             {capa && (
               <div className="hidden md:block absolute left-6 top-1/2 -translate-y-1/2 z-[2]">
-                <div className="relative h-60 w-60 rounded-full overflow-hidden bg-neutral-100 ring-4 ring-white ring-offset-4 ring-offset-brand-primary shadow-[0_20px_40px_-15px_rgba(0,0,0,0.4)]">
+                <div
+                  className="
+            relative h-72 w-72
+            rounded-full overflow-hidden
+            bg-neutral-100
+            ring-4 ring-white ring-offset-4 ring-offset-brand-primary
+            shadow-[0_20px_40px_-15px_rgba(0,0,0,0.4)]
+          "
+                >
+                  {/* imagem */}
                   <Image src={capa.url} alt={capa.alt} fill className="object-cover" />
+
+                  {/* overlay para contraste */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent" />
+
+                  {/* nome sobre a imagem */}
+                  <h1
+                    className={`
+              ${script.className}
+              absolute bottom-6 left-1/2 -translate-x-1/2
+              text-white text-[56px] leading-none
+              drop-shadow-xl text-center px-4
+            `}
+                  >
+                    {animal.nome}
+                  </h1>
                 </div>
               </div>
             )}
+
             <div className="md:hidden px-4 text-center">
               {capa && (
                 <div className="flex justify-center">
                   <div
-                    className="
-                      relative h-36 w-36 sm:h-40 sm:w-40
-                      rounded-full overflow-hidden bg-neutral-100
-                      ring-4 ring-white ring-offset-3 ring-offset-brand-primary
-                      shadow-[0_16px_28px_-12px_rgba(0,0,0,0.35)]
-                    "
+                    className="relative h-36 w-36 sm:h-40 sm:w-40rounded-full overflow-hidden bg-neutral-100ring-4 ring-white ring-offset-3 ring-offset-brand-primary shadow-[0_16px_28px_-12px_rgba(0,0,0,0.35)]"
                   >
                     <Image src={capa.url} alt={capa.alt} fill className="object-cover" />
                   </div>
@@ -126,19 +147,21 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
               )}
 
               <div className="mt-3 flex flex-wrap gap-2 justify-center">
-                {chip(<>{especieIcon} {animal.especie === "GATO" ? "Gato" : "Cachorro"}</>)}
+                {chip(
+                  <>
+                    {especieIcon} {animal.especie === "GATO" ? "Gato" : "Cachorro"}
+                  </>
+                )}
                 {chip(<>{animal.sexo === "MACHO" ? "Macho" : "Fêmea"}</>)}
                 {chip(<>Porte: {animal.porte.toLowerCase()}</>)}
                 {animal.raca ? chip(<>Raça: {animal.raca}</>, "raca-m") : null}
-                {animal.temperamento ? chip(<>Temperamento: {animal.temperamento}</>, "temp-m") : null}
+                {animal.temperamento
+                  ? chip(<>Temperamento: {animal.temperamento}</>, "temp-m")
+                  : null}
               </div>
             </div>
-            <div className="hidden md:block pl-[320px] pr-4">
-              <h1
-                className={`${script.className} text-neutral-900 drop-shadow-sm leading-none tracking-tight text-[72px] lg:text-[96px]`}
-              >
-                {animal.nome}
-              </h1>
+
+            <div className="hidden md:block pl-[340px] pr-4">
               {animal.dataResgate && (
                 <p className="mt-1 text-neutral-900/80">
                   Resgatado em <span className="font-semibold">{dataPt(animal.dataResgate)}</span>
@@ -147,14 +170,20 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
               <div className="mt-3 flex flex-wrap gap-2 max-w-[860px]">
                 {chip(
                   <>
-                    {animal.especie === "GATO" ? <Cat className="h-4 w-4" /> : <Dog className="h-4 w-4" />}{" "}
+                    {animal.especie === "GATO" ? (
+                      <Cat className="h-4 w-4" />
+                    ) : (
+                      <Dog className="h-4 w-4" />
+                    )}{" "}
                     {animal.especie === "GATO" ? "Gato" : "Cachorro"}
                   </>
                 )}
                 {chip(<>{animal.sexo === "MACHO" ? "Macho" : "Fêmea"}</>)}
                 {chip(<>Porte: {animal.porte.toLowerCase()}</>)}
                 {animal.raca ? chip(<>Raça: {animal.raca}</>, "raca") : null}
-                {animal.temperamento ? chip(<>Temperamento: {animal.temperamento}</>, "temp") : null}
+                {animal.temperamento
+                  ? chip(<>Temperamento: {animal.temperamento}</>, "temp")
+                  : null}
               </div>
             </div>
 
@@ -163,9 +192,10 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
                 {extra.map((p, i) => (
                   <div
                     key={p.id}
-                    className={`relative overflow-hidden rounded-2xl bg-neutral-100 ring-4 ring-white ring-offset-4 ring-offset-brand-primary shadow-[0_18px_36px_-12px_rgba(0,0,0,0.35)] h-36 w-28 ${
-                      i === 0 ? "rotate-[-6deg]" : "rotate-3"
-                    }`}
+                    className={`relative overflow-hidden rounded-2xl bg-neutral-100
+              ring-4 ring-white ring-offset-4 ring-offset-brand-primary
+              shadow-[0_18px_36px_-12px_rgba(0,0,0,0.35)]
+              h-36 w-28 ${i === 0 ? "rotate-[-6deg]" : "rotate-3"}`}
                   >
                     <Image src={p.url} alt={p.alt} fill className="object-cover" />
                   </div>

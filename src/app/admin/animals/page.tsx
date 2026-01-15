@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { PawPrint } from "lucide-react";
+import { formatIdade } from "@/lib/formatIdade";
 
 export const revalidate = 0;
 
@@ -107,7 +108,9 @@ export default async function AnimalsAdminList() {
                     <div className="text-sm text-neutral-600">
                       {a.especie} • {a.sexo} • {a.porte}
                     </div>
-                    <div className="text-xs text-neutral-500">Idade: {a.idadeMeses} meses</div>
+                    <div className="text-xs text-neutral-500">
+                      Idade: {formatIdade(a.idadeMeses)}
+                    </div>
 
                     <div className="mt-1 flex flex-wrap gap-1.5">
                       {a.adotado && (
