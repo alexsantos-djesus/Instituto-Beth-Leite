@@ -3,7 +3,7 @@ import Link from "next/link";
 import SectionShell from "./SectionShell";
 import { prisma } from "@/lib/prisma";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 type Props = {
   showMax?: number;

@@ -54,6 +54,12 @@ export default function AnimalsZone({ destaques }: { destaques: any[] }) {
           );
         })}
       </div>
+      <Link
+        href="/animais"
+        className="mt-6 sm:hidden inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 bg-teal-600 text-white font-medium hover:bg-teal-700"
+      >
+        Ver todos os animais <Sparkles size={16} />
+      </Link>
     </SectionShell>
   );
 }
