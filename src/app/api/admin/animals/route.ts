@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getSession } from "@/lib/getSession";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +41,16 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    // 👉 1. PEGA A SESSÃO PRIMEIRO
+    const session = await getSession();
+
+    if (!session) {
+      return NextResponse.json({ error: "Usuário não autenticado" }, { status: 401 });
+    }
+
+    const userId = Number(session.id);
+
+    // 👉 2. SÓ AGORA LÊ O BODY
     const body = await req.json();
     const {
       slug,
@@ -94,6 +105,10 @@ export async function POST(req: Request) {
         saudeDetalhes: saudeDetalhes ?? null,
         dataResgate: dataResgate ? new Date(dataResgate) : null,
         fivFelvStatus: especie === "GATO" ? asFivFelv(fivFelvStatus) : null,
+
+        // ⭐⭐ A LINHA QUE RESOLVE TUDO ⭐⭐
+        criadoPorId: userId,
+
         photos:
           Array.isArray(photos) && photos.length
             ? {
@@ -116,7 +131,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json(created, { status: 201 });
   } catch (err: any) {
-
     if (err?.code === "P2002") {
       return NextResponse.json({ error: "Já existe um animal com esse slug." }, { status: 409 });
     }

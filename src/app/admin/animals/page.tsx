@@ -6,23 +6,53 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { PawPrint } from "lucide-react";
 import { formatIdade } from "@/lib/formatIdade";
+import { getSession } from "@/lib/getSession";
 
 export const revalidate = 0;
 
+console.log(
+  cookies()
+    .getAll()
+    .map((c) => ({ name: c.name, value: c.value }))
+);
+
 async function toggleAdotado(formData: FormData) {
   "use server";
-  const cookie = cookies().get("ibl_admin")?.value;
-  // if (cookie !== "1") return;
 
+  // 1️⃣ Quem é o usuário?
+  const cookieStore = cookies();
+  const userId = Number(cookieStore.get("user_id")?.value);
+  const role = cookieStore.get("role")?.value;
+
+  if (!userId) {
+    throw new Error("Usuário não autenticado");
+  }
+
+  // 2️⃣ Qual animal ele quer mudar?
   const id = Number(formData.get("id"));
   const adotado = String(formData.get("adotado")) === "true";
+
   if (!id) return;
 
+  // 3️⃣ Buscar o dono do animal
+  const animal = await prisma.animal.findUnique({
+    where: { id },
+    select: { criadoPorId: true },
+  });
+
+  if (!animal) {
+    throw new Error("Animal não encontrado");
+  }
+
+  // 4️⃣ Verificar permissão
+  if (role !== "ADMIN" && animal.criadoPorId !== userId) {
+    throw new Error("Você não pode alterar este animal");
+  }
+
+  // 5️⃣ Atualizar (agora é seguro)
   await prisma.animal.update({
     where: { id },
-    data: adotado
-      ? { adotado: false, adotadoEm: null, atualizadoEm: new Date() }
-      : { adotado: true, adotadoEm: new Date(), atualizadoEm: new Date() },
+    data: adotado ? { adotado: false, adotadoEm: null } : { adotado: true, adotadoEm: new Date() },
   });
 
   revalidatePath("/admin/animals");
@@ -53,7 +83,20 @@ async function toggleOculto(formData: FormData) {
 }
 
 export default async function AnimalsAdminList() {
+  const session = await getSession();
+
+  const userId = Number(session.id);
+  const role = session.role;
+
+  if (!session) {
+    throw new Error("Usuário não autenticado");
+  }
+
   const animals = await prisma.animal.findMany({
+    where:
+      role === "ADMIN"
+        ? {} // admin vê tudo
+        : { criadoPorId: userId }, // usuário vê só os seus
     orderBy: { atualizadoEm: "desc" },
     include: {
       photos: {

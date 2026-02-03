@@ -16,15 +16,15 @@ enum FivFelvStatus {
 }
 
 model Animal {
-  id              Int               @id @default(autoincrement())
-  slug            String            @unique
+  id              Int            @id @default(autoincrement())
+  slug            String         @unique
   nome            String
   especie         String
   sexo            String
   porte           String
   idadeMeses      Int
-  vacinado        Boolean           @default(false)
-  castrado        Boolean           @default(false)
+  vacinado        Boolean        @default(false)
+  castrado        Boolean        @default(false)
   raca            String?
   temperamento    String?
   descricao       String
@@ -32,15 +32,21 @@ model Animal {
   convivencia     String?
   saudeDetalhes   String?
   dataResgate     DateTime?
-  criadoEm        DateTime          @default(now())
-  atualizadoEm    DateTime          @updatedAt
-  adotado         Boolean           @default(false)
+  criadoEm        DateTime       @default(now())
+  atualizadoEm    DateTime       @updatedAt
+  adotado         Boolean        @default(false)
   adotadoEm       DateTime?
   fivFelvStatus   FivFelvStatus?
-  oculto          Boolean           @default(false)
-  requests        AdoptionRequest[]
-  photos          Photo[]
+  oculto          Boolean        @default(false)
 
+  // 🔒 CONTROLE DE AUTORIA
+  criadoPorId Int
+  criadoPor   User @relation(fields: [criadoPorId], references: [id])
+
+  requests AdoptionRequest[]
+  photos   Photo[]
+
+  @@index([criadoPorId])
   @@index([adotado, adotadoEm])
 }
 
@@ -79,17 +85,20 @@ model AdoptionRequest {
 }
 
 model User {
-  id            Int             @id @default(autoincrement())
-  email         String          @unique
-  name          String
-  password      String
-  approved      Boolean         @default(false)
-  active        Boolean  @default(true)
-  institution   String?
-  photoUrl      String?
-  role          Role            @default(USER)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  name        String
+  password    String
+  approved    Boolean  @default(false)
+  active      Boolean  @default(true)
+  institution String?
+  photoUrl    String?
+  role        Role     @default(USER)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  animals Animal[] // ✅ relação inversa
+
   PasswordReset PasswordReset[]
 }
 
