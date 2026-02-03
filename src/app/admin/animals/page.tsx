@@ -3,53 +3,40 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { PawPrint } from "lucide-react";
 import { formatIdade } from "@/lib/formatIdade";
-import { getSession } from "@/lib/getSession";
 
 export const revalidate = 0;
-
-console.log(
-  cookies()
-    .getAll()
-    .map((c) => ({ name: c.name, value: c.value }))
-);
 
 async function toggleAdotado(formData: FormData) {
   "use server";
 
-  // 1️⃣ Quem é o usuário?
-  const cookieStore = cookies();
-  const userId = Number(cookieStore.get("user_id")?.value);
-  const role = cookieStore.get("role")?.value;
+  const { cookies } = await import("next/headers");
+  const { verifySession } = await import("@/lib/auth");
 
-  if (!userId) {
-    throw new Error("Usuário não autenticado");
-  }
+  const token = cookies().get("ibl_user")?.value;
+  const session = token ? await verifySession(token) : null;
 
-  // 2️⃣ Qual animal ele quer mudar?
+  if (!session) throw new Error("Usuário não autenticado");
+
+  const userId = Number(session.id);
+  const role = session.role;
+
   const id = Number(formData.get("id"));
   const adotado = String(formData.get("adotado")) === "true";
-
   if (!id) return;
 
-  // 3️⃣ Buscar o dono do animal
   const animal = await prisma.animal.findUnique({
     where: { id },
     select: { criadoPorId: true },
   });
 
-  if (!animal) {
-    throw new Error("Animal não encontrado");
-  }
+  if (!animal) throw new Error("Animal não encontrado");
 
-  // 4️⃣ Verificar permissão
   if (role !== "ADMIN" && animal.criadoPorId !== userId) {
-    throw new Error("Você não pode alterar este animal");
+    throw new Error("Sem permissão");
   }
 
-  // 5️⃣ Atualizar (agora é seguro)
   await prisma.animal.update({
     where: { id },
     data: adotado ? { adotado: false, adotadoEm: null } : { adotado: true, adotadoEm: new Date() },
@@ -62,50 +49,84 @@ async function toggleAdotado(formData: FormData) {
 
 async function toggleOculto(formData: FormData) {
   "use server";
-  const cookie = cookies().get("ibl_admin")?.value;
-  // if (cookie !== "1") return;
 
-  const id = Number(formData.get("id"));
-  const oculto = String(formData.get("oculto")) === "true";
-  if (!id) return;
+  // 1️⃣ Ler sessão a partir do JWT
+  const { cookies } = await import("next/headers");
+  const { verifySession } = await import("@/lib/auth");
 
-  await prisma.animal.update({
-    where: { id },
-    data: oculto
-      ? { oculto: false, atualizadoEm: new Date() }
-      : { oculto: true, atualizadoEm: new Date() },
-  });
-
-  revalidatePath("/admin/animals");
-  revalidatePath("/animais");
-  revalidatePath("/");
-  console.log("COOKIE ADMIN:", cookies().get("ibl_admin"));
-}
-
-export default async function AnimalsAdminList() {
-  const session = await getSession();
-
-  const userId = Number(session.id);
-  const role = session.role;
+  const token = cookies().get("ibl_user")?.value;
+  const session = token ? await verifySession(token) : null;
 
   if (!session) {
     throw new Error("Usuário não autenticado");
   }
 
-  const animals = await prisma.animal.findMany({
-    where:
-      role === "ADMIN"
-        ? {} // admin vê tudo
-        : { criadoPorId: userId }, // usuário vê só os seus
-    orderBy: { atualizadoEm: "desc" },
-    include: {
-      photos: {
-        where: { isCover: true },
-        orderBy: { sortOrder: "asc" },
-        take: 1,
-      },
+  const userId = Number(session.id);
+  const role = session.role;
+
+  // 2️⃣ Dados do formulário
+  const id = Number(formData.get("id"));
+  const oculto = String(formData.get("oculto")) === "true";
+  if (!id) return;
+
+  // 3️⃣ Buscar animal e dono
+  const animal = await prisma.animal.findUnique({
+    where: { id },
+    select: { criadoPorId: true },
+  });
+
+  if (!animal) {
+    throw new Error("Animal não encontrado");
+  }
+
+  // 4️⃣ Regra de permissão
+  if (role !== "ADMIN" && animal.criadoPorId !== userId) {
+    throw new Error("Você não pode ocultar este animal");
+  }
+
+  // 5️⃣ Atualizar
+  await prisma.animal.update({
+    where: { id },
+    data: {
+      oculto: !oculto,
+      atualizadoEm: new Date(),
     },
   });
+
+  // 6️⃣ Revalidar páginas
+  revalidatePath("/admin/animals");
+  revalidatePath("/animais");
+  revalidatePath("/");
+}
+
+export default async function AnimalsAdminList() {
+   const { cookies } = await import("next/headers");
+   const { verifySession } = await import("@/lib/auth");
+
+   const token = cookies().get("ibl_user")?.value;
+   const session = token ? await verifySession(token) : null;
+
+   if (!session) {
+     throw new Error("Usuário não autenticado");
+   }
+
+   const userId = Number(session.id);
+   const role = session.role;
+
+    const animals = await prisma.animal.findMany({
+      where:
+        role === "ADMIN"
+          ? {} // 👑 admin vê tudo
+          : { criadoPorId: userId }, // 👤 usuário vê só os seus
+      orderBy: { atualizadoEm: "desc" },
+      include: {
+        photos: {
+          where: { isCover: true },
+          orderBy: { sortOrder: "asc" },
+          take: 1,
+        },
+      },
+    });
 
   return (
     <Container className="py-8">
