@@ -36,40 +36,64 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     where: { id },
     select: { slug: true, especie: true },
   });
+
   if (!current) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+
   const oldSlug = current.slug;
 
   const {
-    photos: _ignorePhotos,
-    dataResgate,
-    slug,
     nome,
     especie,
+    sexo,
+    porte,
+    idadeMeses,
+    vacinado,
+    castrado,
+    raca,
+    temperamento,
+    descricao,
+    historiaResgate,
+    convivencia,
+    saudeDetalhes,
+    dataResgate,
+    slug,
     fivFelvStatus,
-    ...rest
-  } = (body ?? {}) as Record<string, unknown>;
+    oculto,
+    adotado,
+  } = body ?? {};
 
-  const computedSafeSlug = slugify((slug as string) || (nome as string) || "") || oldSlug;
+  const safeSlug = slugify(slug || nome || "") || oldSlug;
 
-  const nextFivFelv =
-    (typeof especie === "string" ? especie : current.especie) === "GATO"
-      ? asFivFelv(fivFelvStatus)
-      : null;
+  const nextFivFelv = (especie ?? current.especie) === "GATO" ? asFivFelv(fivFelvStatus) : null;
+
+  const data = {
+    nome,
+    sexo,
+    porte,
+    idadeMeses: Number(idadeMeses),
+    vacinado: !!vacinado,
+    castrado: !!castrado,
+    raca: raca ?? null,
+    temperamento: temperamento ?? null,
+    descricao,
+    historiaResgate: historiaResgate ?? null,
+    convivencia: convivencia ?? null,
+    saudeDetalhes: saudeDetalhes ?? null,
+    dataResgate: dataResgate ? new Date(dataResgate) : null,
+    especie,
+    slug: safeSlug,
+    fivFelvStatus: nextFivFelv,
+    oculto: !!oculto,
+    adotado: !!adotado,
+    adotadoEm: adotado ? new Date() : null,
+    atualizadoEm: new Date(),
+  };
 
   const updated = await prisma.animal.update({
     where: { id },
-    data: {
-      ...rest,
-      slug: computedSafeSlug,
-      ...(typeof especie === "string" ? { especie: especie as string } : {}),
-      ...(dataResgate !== undefined
-        ? { dataResgate: dataResgate ? new Date(String(dataResgate)) : null }
-        : {}),
-      ...(fivFelvStatus !== undefined ? { fivFelvStatus: nextFivFelv } : {}),
-      atualizadoEm: new Date(),
-    },
+    data,
     select: { id: true, slug: true },
   });
 
