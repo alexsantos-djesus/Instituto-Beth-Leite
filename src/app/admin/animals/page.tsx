@@ -114,10 +114,7 @@ export default async function AnimalsAdminList() {
    const role = session.role;
 
     const animals = await prisma.animal.findMany({
-      where:
-        role === "ADMIN"
-          ? {} // 👑 admin vê tudo
-          : { criadoPorId: userId }, // 👤 usuário vê só os seus
+      where: role === "ADMIN" ? {} : { criadoPorId: userId },
       orderBy: { atualizadoEm: "desc" },
       include: {
         photos: {
@@ -125,6 +122,15 @@ export default async function AnimalsAdminList() {
           orderBy: { sortOrder: "asc" },
           take: 1,
         },
+        criadoPor:
+          role === "ADMIN"
+            ? {
+                select: {
+                  name: true,
+                  email: true,
+                },
+              }
+            : false,
       },
     });
 
@@ -159,8 +165,16 @@ export default async function AnimalsAdminList() {
             return (
               <li
                 key={a.id}
-                className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-neutral-200/60"
+                className="relative group rounded-2xl bg-white p-4 shadow-card ring-1 ring-neutral-200/60"
               >
+                {role === "ADMIN" && a.criadoPor && (
+                  <div className="absolute top-2 right-2 hidden group-hover:block z-10">
+                    <div className="rounded-lg bg-neutral-900 text-white text-xs px-3 py-2 shadow-lg whitespace-nowrap">
+                      <div className="font-semibold">{a.criadoPor.name}</div>
+                      <div className="opacity-80">{a.criadoPor.email}</div>
+                    </div>
+                  </div>
+                )}
                 <div className="flex gap-3">
                   <div className="relative h-20 w-28 rounded-lg overflow-hidden bg-neutral-100 shrink-0">
                     {cover && (

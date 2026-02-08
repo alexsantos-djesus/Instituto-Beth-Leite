@@ -43,9 +43,18 @@ type Req = {
   uf: string;
   mensagem: string;
   criadoEm: string;
-  animal: { id: number; nome: string };
+  animal: {
+    id: number;
+    nome: string;
+    criadoPor: {
+      id: number;
+      name: string;
+      email: string;
+    };
+  };
   perfil?: any | null;
 };
+
 type StatusKey = Req["status"];
 
 const statusLabel: Record<StatusKey, string> = {
@@ -362,6 +371,17 @@ export default function AdminSolicitacoes() {
                     </span>
                     <span className="text-neutral-400">•</span>
                     <StatusBadge s={openReq.status} />
+                  </div>
+
+                  <div className="mt-1 text-sm text-neutral-600">
+                    <strong>Responsável:</strong> {openReq.animal.criadoPor.name}
+                    {" • "}
+                    <a
+                      href={`mailto:${openReq.animal.criadoPor.email}`}
+                      className="underline hover:text-neutral-800"
+                    >
+                      {openReq.animal.criadoPor.email}
+                    </a>
                   </div>
 
                   <div className="text-xs text-neutral-500">
