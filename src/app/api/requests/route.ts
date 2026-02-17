@@ -9,7 +9,7 @@ const TempoAusente = ["ATE_4H", "H4_8", "H8_12", "12H_PLUS"] as const;
 
 const PerfilBase = z.object({
   trabalhaFora: z.enum(["SIM", "NAO"]),
-  tempoAusente: z.enum(TempoAusente).optional(),
+  tempoAusente: z.preprocess((v) => (v === "" ? undefined : v), z.enum(TempoAusente).optional()),
   ramoTrabalho: z.string().min(2).max(120),
   alguemEmCasaDia: z.enum(["SIM", "NAO"]),
   moradoresQtd: z.coerce.number().int().min(1).max(50),
@@ -109,7 +109,16 @@ export async function POST(req: Request) {
 
     const exists = await prisma.animal.findUnique({
       where: { id: data.animalId },
-      select: { id: true, adotado: true, nome: true },
+      select: {
+        id: true,
+        adotado: true,
+        nome: true,
+        criadoPor: {
+          select: {
+            email: true,
+          },
+        },
+      },
     });
 
     if (!exists || exists.adotado) {
@@ -144,12 +153,13 @@ export async function POST(req: Request) {
 
     const adminEmails = admins.map((a) => a.email);
 
-    await sendAdoptionRequestNotification(
-      adminEmails,
-      exists.nome,
-      created.nome, 
-      created.email 
-    );
+    // email do criador do animal
+    const ownerEmail = exists.criadoPor?.email;
+
+    // junta todos removendo duplicados
+    const recipients = Array.from(new Set([...adminEmails, ownerEmail].filter(Boolean)));
+
+    await sendAdoptionRequestNotification(recipients, exists.nome, created.nome, created.email);
 
     return NextResponse.json(created, { status: 201 });
   } catch (err: any) {
