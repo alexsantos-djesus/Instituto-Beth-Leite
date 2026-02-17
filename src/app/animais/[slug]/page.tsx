@@ -16,6 +16,7 @@ import {
   Cat,
 } from "lucide-react";
 import { Great_Vibes } from "next/font/google";
+import AnimalGallery from "@/components/AnimalGallery";
 
 const script = Great_Vibes({ subsets: ["latin"], weight: "400" });
 
@@ -63,7 +64,7 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
     <>
       <section
         className="
-          relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]
+          relative w-full
           -mt-[var(--header-h)] pt-[calc(var(--header-h)+8px)]
           bg-gradient-to-b from-brand-soft via-[#F8E59C] to-brand-primary
           overflow-hidden
@@ -89,46 +90,35 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
         />
 
         <div className="container max-w-6xl">
-          <div className="relative py-12 sm:py-14 md:py-20">
+          <div className="relative py-8 sm:py-10 md:py-12">
             {/* ===== DESKTOP: imagem + nome SOBRE a imagem ===== */}
             {capa && (
               <div className="hidden md:block absolute left-6 top-1/2 -translate-y-1/2 z-[2]">
                 <div
-                  className="
-            relative h-72 w-72
-            rounded-full overflow-hidden
-            bg-neutral-100
-            ring-4 ring-white ring-offset-4 ring-offset-brand-primary
-            shadow-[0_20px_40px_-15px_rgba(0,0,0,0.4)]
-          "
+                  className="relative h-72 w-72
+                            rounded-full overflow-hidden
+                            bg-neutral-100
+                            ring-4 ring-white ring-offset-4 ring-offset-brand-primary
+                            shadow-[0_20px_40px_-15px_rgba(0,0,0,0.4)]"
                 >
-                  {/* imagem */}
                   <Image src={capa.url} alt={capa.alt} fill className="object-cover" />
-
-                  {/* overlay para contraste */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent" />
-
-                  {/* nome sobre a imagem */}
-                  <h1
-                    className={`
-              ${script.className}
-              absolute bottom-6 left-1/2 -translate-x-1/2
-              text-white text-[56px] leading-none
-              drop-shadow-xl text-center px-4
-            `}
-                  >
-                    {animal.nome}
-                  </h1>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/5 to-transparent" />
                 </div>
               </div>
-            )}
-
+            )}{" "}
+            {/* <-- FECHA AQUI */}
+            {/* BLOCO TEXTO */}
+            <div className="hidden md:block pl-[340px] pr-4">
+              <h1
+                className={`${script.className} text-[64px] leading-none text-neutral-900 drop-shadow-sm mb-2`}
+              >
+                {animal.nome}
+              </h1>
+            </div>
             <div className="md:hidden px-4 text-center">
               {capa && (
                 <div className="flex justify-center">
-                  <div
-                    className="relative h-36 w-36 sm:h-40 sm:w-40rounded-full overflow-hidden bg-neutral-100ring-4 ring-white ring-offset-3 ring-offset-brand-primary shadow-[0_16px_28px_-12px_rgba(0,0,0,0.35)]"
-                  >
+                  <div className="relative h-36 w-36 sm:h-40 sm:w-40 rounded-full overflow-hidden bg-neutral-100 ring-4 ring-white ring-offset-3 ring-offset-brand-primary shadow-[0_16px_28px_-12px_rgba(0,0,0,0.35)]">
                     <Image src={capa.url} alt={capa.alt} fill className="object-cover" />
                   </div>
                 </div>
@@ -160,7 +150,6 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
                   : null}
               </div>
             </div>
-
             <div className="hidden md:block pl-[340px] pr-4">
               {animal.dataResgate && (
                 <p className="mt-1 text-neutral-900/80">
@@ -186,9 +175,8 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
                   : null}
               </div>
             </div>
-
             {extra.length > 0 && (
-              <div className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 gap-4">
+              <div className="hidden md:flex justify-end gap-4 mt-6">
                 {extra.map((p, i) => (
                   <div
                     key={p.id}
@@ -312,31 +300,12 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
           </div>
         ) : null}
 
-        {fotos.length > 1 ? (
+        {fotos.filter((f) => f.url).length > 0 && (
           <div className="bg-white rounded-2xl p-6 shadow-card">
             <h3 className="font-bold text-lg mb-4">Galeria de momentos</h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {fotos.map((p: any) => (
-                <figure
-                  key={p.id}
-                  className="rounded-xl overflow-hidden bg-neutral-100 ring-1 ring-neutral-200/60"
-                >
-                  <div className="relative aspect-[4/3]">
-                    <Image
-                      src={p.url}
-                      alt={p.alt}
-                      fill
-                      className="object-cover transition-transform duration-300 hover:scale-[1.03]"
-                    />
-                  </div>
-                  {p.alt ? (
-                    <figcaption className="p-2 text-sm text-neutral-700">{p.alt}</figcaption>
-                  ) : null}
-                </figure>
-              ))}
-            </div>
+            <AnimalGallery fotos={fotos.filter((f) => f.url)} />
           </div>
-        ) : null}
+        )}
       </div>
 
       <aside className="space-y-6">
