@@ -14,6 +14,7 @@ import {
   PawPrint,
   Dog,
   Cat,
+  ArrowLeft,
 } from "lucide-react";
 import { Great_Vibes } from "next/font/google";
 import AnimalGallery from "@/components/AnimalGallery";
@@ -70,6 +71,15 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
           overflow-hidden
         "
       >
+        <div className="container max-w-6xl">
+          <Link
+            href="/animais"
+            className="inline-flex items-center gap-2 text-neutral-800 hover:text-neutral-900 mb-4"
+          >
+            <ArrowLeft size={18} />
+            Voltar para os animais
+          </Link>
+        </div>
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.16] md:opacity-[0.18] mix-blend-multiply"
