@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Great_Vibes } from "next/font/google";
 import AnimalGallery from "@/components/AnimalGallery";
+import AutoBackToAnimals from "@/components/AutoBackToAnimals";
 
 const script = Great_Vibes({ subsets: ["latin"], weight: "400" });
 
@@ -63,6 +64,7 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
 
   return (
     <>
+      <AutoBackToAnimals />
       <section
         className="
           relative w-full
