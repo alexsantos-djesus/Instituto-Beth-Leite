@@ -22,14 +22,14 @@ export default function MobileMenuDrawer({
     <>
       <div
         onClick={onClose}
-        className={`md:hidden fixed inset-0 z-[80] bg-black/40 transition-opacity duration-300 ${
+        className={`lg:hidden fixed inset-0 z-[80] bg-black/40 transition-opacity duration-300 ${
           open ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       />
 
       <aside
         data-open={open}
-        className={`md:hidden fixed top-0 bottom-0 z-[90] w-80 bg-white shadow-xl transition-transform duration-300 ${sideClass}`}
+        className={`lg:hidden fixed top-0 bottom-0 z-[90] w-80 bg-white shadow-xl transition-transform duration-300 ${sideClass}`}
         aria-hidden={!open}
       >
         <div className="flex items-center justify-between p-4 border-b">

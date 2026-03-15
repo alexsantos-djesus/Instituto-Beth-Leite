@@ -20,7 +20,7 @@ export default function Header() {
   }, [open]);
 
   const DesktopNav = () => (
-    <nav className="hidden md:flex items-center gap-1">
+    <nav className="hidden lg:flex items-center gap-1">
       {[
         ["/animais", "Animais"],
         ["/como-ajudar", "Como Ajudar"],
@@ -56,7 +56,7 @@ export default function Header() {
             <button
               aria-label={open ? "Fechar menu" : "Abrir menu"}
               onClick={() => setOpen((v) => !v)}
-              className="md:hidden -ml-2 p-2 rounded-lg hover:bg-neutral-100 transition-colors"
+              className="lg:hidden -ml-2 p-2 rounded-lg hover:bg-neutral-100 transition-colors"
             >
               <div
                 className={`transition-transform duration-300 ease-out ${
