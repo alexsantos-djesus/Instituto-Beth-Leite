@@ -186,6 +186,44 @@ export default async function AnimalPage({ params }: { params: { slug: string } 
                   ? chip(<>Temperamento: {animal.temperamento}</>, "temp")
                   : null}
               </div>
+              {/* BOTÃO CTA */}
+              <div className="mt-6">
+                <Link
+                  href={{ pathname: "/adote", query: { animal: animal.id } }}
+                  className="
+                  relative inline-flex items-center gap-3
+                  rounded-full px-10 py-4
+                  font-semibold text-[17px] text-white
+                  bg-gradient-to-r from-emerald-600 to-green-500
+                  shadow-xl shadow-green-700/40
+                  overflow-hidden
+                  hover:scale-[1.06]
+                  hover:shadow-2xl hover:shadow-green-700/60
+                  transition-all duration-300
+                "
+                >
+                  {/* SHINE */}
+                  <span
+                    className="
+                    absolute inset-0
+                    before:absolute
+                    before:top-0
+                    before:-left-[120%]
+                    before:h-full
+                    before:w-[120%]
+                    before:rotate-12
+                    before:bg-gradient-to-r
+                    before:from-transparent
+                    before:via-white/40
+                    before:to-transparent
+                    before:animate-[shine_3s_infinite]
+                  "
+                  ></span>
+
+                  <HeartHandshake size={22} className="relative z-10" />
+                  <span className="relative z-10">Adotar {animal.nome}</span>
+                </Link>
+              </div>
             </div>
             {extra.length > 0 && (
               <div className="hidden md:flex justify-end gap-4 mt-6">
@@ -359,6 +397,24 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
         </div>
 
         <div className="bg-white rounded-2xl p-6 shadow-card space-y-3">
+          <Link
+            href={{ pathname: "/adote", query: { animal: animal.id } }}
+            className="
+            w-full inline-flex items-center justify-center gap-2
+            rounded-pill px-5 py-3
+            mb-3
+            bg-red-600 text-white font-semibold text-base
+            shadow-lg shadow-red-600/40
+            hover:bg-red-700
+            hover:scale-[1.03]
+            active:scale-[0.97]
+            transition
+            animate-[pulseShadow_2s_infinite]
+            "
+          >
+            <HeartHandshake size={20} />
+            Quero adotar {animal.nome}
+          </Link>
           <QRModal
             url={urlRelative}
             nome={animal.nome}
@@ -382,12 +438,6 @@ function PageBody({ animal, fotos, urlRelative, shareMsg, especieIcon, chip }: a
             href="/como-ajudar"
           >
             <HeartHandshake size={18} /> Apadrinhar / Doar
-          </Link>
-          <Link
-            className="block text-center text-brand-secondary underline"
-            href={{ pathname: "/adote", query: { animal: animal.id } }}
-          >
-            Quero adotar {animal.nome}
           </Link>
         </div>
       </aside>
