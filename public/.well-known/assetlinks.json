@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "br.org.institutobethleite.app",
+      "sha256_cert_fingerprints": [
+        "71:1E:D1:4B:4A:D0:82:4E:72:9B:D9:A4:F1:69:0C:7F:AB:05:8C:B1:B8:64:F1:9C:50:80:05:CF:29:3E:07:1A"
+      ]
+    }
+  }
+]

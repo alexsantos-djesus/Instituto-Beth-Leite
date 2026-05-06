@@ -23,6 +23,17 @@ prisma/dev.db-journal
 logs
 *.log
 
+# Android / Play Store
+android-twa/.gradle/
+android-twa/app/build/
+android-twa/build/
+android-twa/*.keystore
+android-twa/*.jks
+android-twa/*.p12
+android-twa/*.pem
+android-twa/**/*.aab
+android-twa/**/*.apk
+
 # Editor
 .vscode/
 .idea/
