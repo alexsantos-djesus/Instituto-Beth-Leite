@@ -1,0 +1,57 @@
+{
+  "name": "Instituto Beth Leite",
+  "short_name": "Beth Leite",
+  "description": "Adoção responsável, apadrinhamento e apoio aos animais do Instituto Beth Leite.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAFAFA",
+  "theme_color": "#2F855A",
+  "categories": ["lifestyle", "social", "education"],
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Animais",
+      "short_name": "Animais",
+      "description": "Ver animais disponíveis para adoção.",
+      "url": "/animais",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Como Ajudar",
+      "short_name": "Ajudar",
+      "description": "Conheça formas de apoiar o Instituto Beth Leite.",
+      "url": "/como-ajudar",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
